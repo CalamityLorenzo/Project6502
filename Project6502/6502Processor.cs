@@ -23,8 +23,17 @@
         byte[] stackData = new byte[255];
 
         public Six502Processor() { }
+        
         void Reset() { }
 
-
+        // We program is passed in as bytesm and thus already parsed.
+        void Process(byte[] buffer)
+        {
+            var pos = 0;
+            while(pos< buffer.Length)
+            {
+                // do many things.
+            }
+        }
     }
 }
