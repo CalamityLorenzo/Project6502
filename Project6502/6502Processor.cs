@@ -23,7 +23,7 @@
         byte[] stackData = new byte[255];
 
         public Six502Processor() { }
-
+        void Reset() { }
 
 
     }
