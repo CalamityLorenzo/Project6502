@@ -1,0 +1,64 @@
+﻿Opcode matrix for the 6502 instruction set
+Addressing modes: A – accumulator, # – immediate, zpg – zero page, abs – absolute, ind – indirect, X – indexed by X register, Y – indexed by Y register, rel – relative
+High nibble 	Low nibble
+0 	1 	2 	4 	5 	6 	8 	9 	A 	C 	D 	E
+0 	BRK 	ORA (ind,X) 			ORA zpg 	ASL zpg 	PHP 	ORA # 	ASL A 		ORA abs 	ASL abs
+1 	BPL rel 	ORA (ind),Y 			ORA zpg,X 	ASL zpg,X 	CLC 	ORA abs,Y 			ORA abs,X 	ASL abs,X
+2 	JSR abs 	AND (ind,X) 		BIT zpg 	AND zpg 	ROL zpg 	PLP 	AND # 	ROL A 	BIT abs 	AND abs 	ROL abs
+3 	BMI rel 	AND (ind),Y 			AND zpg,X 	ROL zpg,X 	SEC 	AND abs,Y 			AND abs,X 	ROL abs,X
+4 	RTI 	EOR (ind,X) 			EOR zpg 	LSR zpg 	PHA 	EOR # 	LSR A 	JMP abs 	EOR abs 	LSR abs
+5 	BVC rel 	EOR (ind),Y 			EOR zpg,X 	LSR zpg,X 	CLI 	EOR abs,Y 			EOR abs,X 	LSR abs,X
+6 	RTS 	ADC (ind,X) 			ADC zpg 	ROR zpg 	PLA 	ADC # 	ROR A 	JMP (ind) 	ADC abs 	ROR abs
+7 	BVS rel 	ADC (ind),Y 			ADC zpg,X 	ROR zpg,X 	SEI 	ADC abs,Y 			ADC abs,X 	ROR abs,X
+8 		STA (ind,X) 		STY zpg 	STA zpg 	STX zpg 	DEY 		TXA 	STY abs 	STA abs 	STX abs
+9 	BCC rel 	STA (ind),Y 		STY zpg,X 	STA zpg,X 	STX zpg,Y 	TYA 	STA abs,Y 	TXS 		STA abs,X 	
+A 	LDY # 	LDA (ind,X) 	LDX # 	LDY zpg 	LDA zpg 	LDX zpg 	TAY 	LDA # 	TAX 	LDY abs 	LDA abs 	LDX abs
+B 	BCS rel 	LDA (ind),Y 		LDY zpg,X 	LDA zpg,X 	LDX zpg,Y 	CLV 	LDA abs,Y 	TSX 	LDY abs,X 	LDA abs,X 	LDX abs,Y
+C 	CPY # 	CMP (ind,X) 		CPY zpg 	CMP zpg 	DEC zpg 	INY 	CMP # 	DEX 	CPY abs 	CMP abs 	DEC abs
+D 	BNE rel 	CMP (ind),Y 			CMP zpg,X 	DEC zpg,X 	CLD 	CMP abs,Y 			CMP abs,X 	DEC abs,X
+E 	CPX # 	SBC (ind,X) 		CPX zpg 	SBC zpg 	INC zpg 	INX 	SBC # 	NOP 	CPX abs 	SBC abs 	INC abs
+F 	BEQ rel 	SBC (ind),Y 			SBC zpg,X 	INC zpg,X 	SED 	SBC abs,Y 			SBC abs,X 	INC abs,X
+Blank opcodes (e.g., F2) and all opcodes whose low nibbles are 3, 7, B and F are undefined in the 6502 instruction set. 
+
+
+LDA 
+Immediate A9	= 101 010 01
+Zero Page $A5	= 101 001 01
+Zero Page.X $B5 = 101 101 01
+Absolute   $AD	= 101 011 01
+Absolute.X $BD  = 101 111 01
+Absolute.Y $B9	= 101 110 01
+(INdirect.X) $A1 =101 010 01
+(Indirect.Y) $B1 =101 100 01
+LDX
+Immediate	 $A2 = $101 000 10
+Zero Page	 $A6 = $101 001 10 
+Zero Page.Y  $B6 = $101 101 10 
+Absolute	 $AE = $101 011 10
+Absolute.Y	 $BE = $101 111 10
+
+cmp
+Imeediate	 $C9 = 110 010 01
+Zero page	 $C5 = 110 001 01
+Zero page.x	 $D5 = 110 101 01
+Absolute	 $CD = 110 011 01
+Absolute.X	 $DD = 110 111 01
+Absolute.Y   $D9 = 110 110 01
+(Indirex.X)	 $C1 = 110 010 01
+(Indirect),y $D1 = 110 100 01
+
+ADC
+immediate 	 $69 = 011 010 01
+Zero Page	 $65 = 011 001 01
+Zero Page.x	 $75 = 011 011 01
+Absolute     $6D = 011 011 01
+Absolute.X	 $7D = 011 111 01
+Absolute.Y	 $79 = 011 110 01
+(Indirect.X) $61 = 011 000 01
+(Indirect),Y $71
+
+
+
+LDA #49 = $A9 31 = 1010 1001 1010 1001
+LDA #22 = $A5 16 =   1010 0101 0001 0110
+LDA #22 = $B5 16 = 1011 0101 0001 0110
