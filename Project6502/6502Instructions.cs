@@ -6,7 +6,7 @@
         void BranchIfOverflowClear()
         {
             var offSet = (sbyte)_programBuffer[_programCounter ++];
-            this._programCounter += offSet;
+            this._programCounter = ((ushort)(_programCounter + offSet));
         }
 
         // CLC
@@ -164,12 +164,12 @@
             {
                 0xA9 => _programBuffer[_programCounter ++],
                 0xA5 => memory[_programBuffer[_programCounter ++]],
-                0xB5 => memory[(_programBuffer[_programCounter ++] + XRegister) % 128],
-                0xAD => memory[_programBuffer[_programCounter ++] + _programBuffer[_programCounter ++]],
-                0xBD => memory[_programBuffer[_programCounter ++] + _programBuffer[_programCounter ++] + XRegister],
-                0xB9 => memory[_programBuffer[_programCounter ++] + _programBuffer[_programCounter ++] + YRegister],
-                0xA1 => memory[(_programBuffer[_programCounter ++] + XRegister) % 128], // Indexed Indirect x ($,X)
-                0xB1 => memory[(_programBuffer[_programCounter ++] + YRegister) % 128], // INdreict index Y ($),y
+                0xB5 => memory[(_programBuffer[_programCounter ++] + XRegister) &0xFF],
+                0xAD => memory[_programBuffer.Absolute(_programCounter)],
+                0xBD => memory[_programBuffer.Absolute(_programCounter) + XRegister],
+                0xB9 => memory[_programBuffer.Absolute(_programCounter) + YRegister],
+                0xA1 =>  memory.ToIndexedIndirect((byte)((_programBuffer[_programCounter++] + XRegister) & 0xFF) ), // Indexed Indirect x ($,X)
+                0xB1 => memory[(_programBuffer[_programCounter ++] + YRegister) & 0xFF], // INdreict index Y ($),y
 
             };
             Accumulator = operand;
@@ -187,7 +187,7 @@
         {
             var bottom = memory[_programBuffer[_programCounter ++]];
             var top = memory[_programBuffer[_programCounter ++]];
-            _programCounter = (short)(top << 7 | bottom);
+            _programCounter = (ushort)(top << 7 | bottom);
         }
 
     }

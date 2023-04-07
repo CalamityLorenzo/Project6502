@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace _6502_Testing
 {
     [TestClass]
-    public class TTests
+    public class TransferXY
     {
         Six502Processor createProcessor() => new Six502Processor(new byte[ushort.MaxValue]);
         Six502Processor createProcessor(byte[] mem) => new Six502Processor(mem);

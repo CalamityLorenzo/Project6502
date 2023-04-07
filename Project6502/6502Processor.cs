@@ -32,7 +32,7 @@ namespace Project6502
         // Negative 
         bool[] _processorStatusFlags = new bool[8];
 
-        short _programCounter;
+        ushort _programCounter;
 
         // Memory page 1
         // $0100-$01ff = 256->511`
