@@ -1,4 +1,7 @@
-﻿namespace Project6502
+﻿using System.ComponentModel;
+using System.Net.Http.Headers;
+
+namespace Project6502
 {
 
     /*
@@ -9,12 +12,19 @@
      * program counter
      * 11 fucking addressing modes.
      */
-    public class Six502Processor
+    public partial class Six502Processor
     {
         byte Accumulator;
         byte IndexX;
         byte IndexY;
-        int _stackPointer;
+        byte _stackPointer;
+        // C arry 
+        // Z ero 
+        // Interrupt disable
+        // Decimal Mode
+        // B reak command
+        // V Overfow
+        // Negative 
         bool[] _processorStatusFlags = new bool[8];
         short _programCounter;
 
@@ -29,10 +39,34 @@
         // We program is passed in as bytesm and thus already parsed.
         void Process(byte[] buffer)
         {
-            var pos = 0;
-            while(pos< buffer.Length)
+            _programCounter = 0; ;
+            while(_programCounter < buffer.Length)
             {
                 // do many things.
+
+                switch (buffer[_programCounter])
+                {
+                    case 0x50:
+                        BranchIfOverflowClear((sbyte)buffer[_programCounter+=1]); // BVC;
+                        break;
+
+                    case 0x18: // CLC
+                        CLearCarry();
+                        break;
+                    case 0xD8: // CLD
+                        CLearDecimal();
+                        break;
+                    case 0x58:
+                        CLearInterrupt();
+                        break;
+                    case 0xB8:
+                        CLearoVerflow();
+                        break;
+
+                }
+
+                // 16 bit addressing
+                _programCounter += 1;
             }
         }
     }
