@@ -194,5 +194,39 @@ namespace _6502_Testing
             Assert.IsTrue(registers["A"] == "8");
             Assert.IsTrue(registers["X"] == "16");
         }
+
+        [TestMethod("LDA : Indirect Indexed.Y")]
+        public void LDAIndirectY()
+        {
+            // put a value in the zero page (0->FF)
+            var mem = new byte[ushort.MaxValue];
+            // this should become $64 $65
+            // Thus LDA = 6465
+            mem[50] = 255;  // lsb
+            mem[51] = 18;  // msb
+             // (18<<8 | 255) + Yreg
+            mem[4863+16] = 71;
+
+            var processor = createProcessor(mem);
+
+
+            var program = new byte[]
+            {
+                //!-- Preamble
+                0xA9, // LDA #16 (Immediate)
+                0x10,
+                0xA8,  // TAX x = 16
+
+                0xB1,
+                0x32   // 255
+            };
+
+            processor.Process(program);
+            var registers = processor.Registers();
+            Trace.WriteLine(registers["A"]);
+            Trace.WriteLine(registers["Y"]);
+            Assert.IsTrue(registers["A"] == "71");
+            Assert.IsTrue(registers["Y"] == "16");
+        }
     }
 }

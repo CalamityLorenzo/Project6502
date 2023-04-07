@@ -18,11 +18,17 @@ namespace Project6502
             return (short)(@this[firstPosition+1] << 8 | @this[firstPosition]);
         }
 
-        public static byte ToIndexedIndirect(this byte[] @this, byte firstPosition)
+        public static byte ToIndexedIndirectX(this byte[] @this, byte firstPosition)
         {
             var msb = @this[firstPosition+1];
             var lsb = @this[firstPosition];
             return (byte)(@this[(msb << 8 | lsb)]);
+        }
+
+        public static byte ToIndirectIndexY(this byte[] @this, byte firstPosition, byte yRegister)
+        { 
+            var address  = (int)(@this[firstPosition+1] <<8 | @this[firstPosition]);
+            return @this[address+yRegister];
         }
 
     }

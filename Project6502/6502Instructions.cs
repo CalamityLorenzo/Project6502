@@ -158,20 +158,21 @@
         /// <summary>
         /// LDA
         /// </summary>
+        /// <param name="operation"></param>
         void LoaDtheAccumulator(byte operation)
         {
             var operand = operation switch
             {
-                0xA9 => _programBuffer[_programCounter ++],
-                0xA5 => memory[_programBuffer[_programCounter ++]],
-                0xB5 => memory[(_programBuffer[_programCounter ++] + XRegister) &0xFF],
-                0xAD => memory[_programBuffer.Absolute(_programCounter)],
-                0xBD => memory[_programBuffer.Absolute(_programCounter) + XRegister],
-                0xB9 => memory[_programBuffer.Absolute(_programCounter) + YRegister],
-                0xA1 =>  memory.ToIndexedIndirect((byte)((_programBuffer[_programCounter++] + XRegister) & 0xFF) ), // Indexed Indirect x ($,X)
-                0xB1 => memory[(_programBuffer[_programCounter ++] + YRegister) & 0xFF], // INdreict index Y ($),y
+                0xA9 => ImmediateConstant(),
+                0xA5 => ZeroPage(),
+                0xB5 => ZeroPage_X(),
+                0xAD => Absolute(),
+                0xBD => Absolute_X(),
+                0xB9 => Absolute_Y(),
+                0xA1 => Indirect_X(),
+                0xB1 => Indirect_Y(),
 
-            };
+            } ;
             Accumulator = operand;
             if(Accumulator == 0)
             {
@@ -182,6 +183,71 @@
                 _processorStatusFlags[7] = (operand >> 7) == 1 ? true : _processorStatusFlags[7];
             }
         }
+        
+        /// <summary>
+        /// LDX
+        /// </summary>
+        /// <param name="operation"></param>
+        void LoaDIntoXregister(byte operation)
+        {
+            var operand = (byte)(operation switch
+            {
+                0xA2 => ImmediateConstant(),
+                0xAb => ZeroPage(),
+                0xB6 => ZeroPage_Y(),
+                0xAE => Absolute(),
+                0xBe => Absolute_Y()
+            });
+            XRegister = operand;
+            if (XRegister == 0)
+            {
+                _processorStatusFlags[1] = true;
+            }
+            else
+            {
+                _processorStatusFlags[7] = (operand >> 7) == 1 ? true : _processorStatusFlags[7];
+            }
+        }
+
+        void LoaDIntoYregister(byte operation)
+        {
+            var operand = (byte)(operation switch
+            {
+                0xA0 => ImmediateConstant(),
+                0xA4 => ZeroPage(),
+                0xB4 => ZeroPage_X(),
+                0xAc => Absolute(),
+                0xBC => Absolute_X()
+            });
+            YRegister = operand;
+            if (YRegister == 0)
+            {
+                _processorStatusFlags[1] = true;
+            }
+            else
+            {
+                _processorStatusFlags[7] = (operand >> 7) == 1 ? true : _processorStatusFlags[7];
+            }
+        }
+
+
+        private byte ImmediateConstant() => _programBuffer[_programCounter++];
+
+        private byte ZeroPage() => memory[_programBuffer[_programCounter++]];
+
+        private byte ZeroPage_X() => memory[(_programBuffer[_programCounter++] + XRegister) & 0xFF];
+        private byte ZeroPage_Y() => memory[(_programBuffer[_programCounter++] + YRegister) & 0xFF];
+        private byte Absolute() => memory[_programBuffer.Absolute(_programCounter)];
+
+        private byte Absolute_X() => memory[_programBuffer.Absolute(_programCounter) + XRegister];
+        
+        private byte Absolute_Y() => memory[_programBuffer.Absolute(_programCounter) + YRegister];
+
+        private byte Indirect_X() => memory.ToIndexedIndirectX((byte)((_programBuffer[_programCounter++] + XRegister) & 0xFF)); // Indexed Indirect x ($,X)
+
+        private byte Indirect_Y() => memory.ToIndirectIndexY(_programBuffer[_programCounter++], YRegister); // INdreict index Y ($),y
+
+
 
         void Jump()
         {

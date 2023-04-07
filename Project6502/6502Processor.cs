@@ -130,8 +130,22 @@ namespace Project6502
                     case 0xA1:
                     case 0xB1:
                         LoaDtheAccumulator(instruction);
-                    break; 
+                        break;
+                    case 0xA2: // LDX
+                    case 0xA6:
+                    case 0xB6:
+                    case 0xAE:
+                    case 0xBE:
+                        LoaDIntoXregister(instruction);
+                    break;
 
+                    case 0xA0:
+                    case 0xA4:
+                    case 0xB4:
+                    case 0xAC:
+                    case 0xBC:
+                        LoaDIntoYregister(instruction);
+                      break;
                     case 0x2A: // ROL
                     case 0x26:
                     case 0x36:
