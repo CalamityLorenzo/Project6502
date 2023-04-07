@@ -28,7 +28,7 @@ Zero Page.X $B5 = 101 101 01
 Absolute   $AD	= 101 011 01
 Absolute.X $BD  = 101 111 01
 Absolute.Y $B9	= 101 110 01
-(INdirect.X) $A1 =101 010 01
+(INdirect.X) $A1 =101 000 01
 (Indirect.Y) $B1 =101 100 01
 LDX
 Immediate	 $A2 = $101 000 10
@@ -44,21 +44,34 @@ Zero page.x	 $D5 = 110 101 01
 Absolute	 $CD = 110 011 01
 Absolute.X	 $DD = 110 111 01
 Absolute.Y   $D9 = 110 110 01
-(Indirex.X)	 $C1 = 110 010 01
+(Indirex.X)	 $C1 = 110 000 01
 (Indirect),y $D1 = 110 100 01
 
 ADC
 immediate 	 $69 = 011 010 01
 Zero Page	 $65 = 011 001 01
-Zero Page.x	 $75 = 011 011 01
+Zero Page.x	 $75 = 011 101 01
 Absolute     $6D = 011 011 01
 Absolute.X	 $7D = 011 111 01
 Absolute.Y	 $79 = 011 110 01
 (Indirect.X) $61 = 011 000 01
-(Indirect),Y $71
+(Indirect),Y $71 = 011 100 01
 
 
 
 LDA #49 = $A9 31 = 1010 1001 1010 1001
 LDA #22 = $A5 16 =   1010 0101 0001 0110
 LDA #22 = $B5 16 = 1011 0101 0001 0110
+
+
+001 010 10
+001 001 10
+001 101 10
+001 011 10
+001 111 10
+
+011 010 10
+011 001 10
+011 101 10
+011 011 10
+011 111 10
