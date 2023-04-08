@@ -22,8 +22,8 @@ namespace _6502_Testing
             };
             processor.Process(program);
             var registers = processor.Registers();
-            Trace.WriteLine(registers["A"]);
-            Trace.WriteLine(registers["X"]);
+            Trace.WriteLine($"A {registers["A"]}");
+            Trace.WriteLine($"X {registers["X"]}");
             Assert.IsTrue(registers["A"] == "37");
             Assert.IsTrue(registers["X"] == "37");
         }
@@ -41,8 +41,8 @@ namespace _6502_Testing
             };
             processor.Process(program);
             var registers = processor.Registers();
-            Trace.WriteLine(registers["A"]);
-            Trace.WriteLine(registers["X"]);
+            Trace.WriteLine($"A {registers["A"]}");
+            Trace.WriteLine($"X {registers["X"]}");
             Assert.IsTrue(registers["A"] == "0");
             Assert.IsTrue(registers["X"] == "0");
         }
@@ -60,8 +60,8 @@ namespace _6502_Testing
             };
             processor.Process(program);
             var registers = processor.Registers();
-            Trace.WriteLine(registers["A"]);
-            Trace.WriteLine(registers["Y"]);
+            Trace.WriteLine($"A {registers["A"]}");
+            Trace.WriteLine($"Y {registers["Y"]}");
             Assert.IsTrue(registers["A"] == "37");
             Assert.IsTrue(registers["Y"] == "37");
         }
@@ -79,8 +79,8 @@ namespace _6502_Testing
             };
             processor.Process(program);
             var registers = processor.Registers();
-            Trace.WriteLine(registers["A"]);
-            Trace.WriteLine(registers["Y"]);
+            Trace.WriteLine($"A {registers["A"]}");
+            Trace.WriteLine($"Y {registers["Y"]}");
             Assert.IsTrue(registers["A"] == "0");
             Assert.IsTrue(registers["Y"] == "0");
         }

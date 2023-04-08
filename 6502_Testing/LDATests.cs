@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace _6502_Testing
 {
     [TestClass]
-    public class LDATests
+    public class LDA
     {
 
             

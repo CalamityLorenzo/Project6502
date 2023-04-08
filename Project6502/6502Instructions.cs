@@ -7,7 +7,7 @@ namespace Project6502
         // BOX
         void BranchIfOverflowClear()
         {
-            var offSet = (sbyte)_programBuffer[_programCounter ++];
+            var offSet = (sbyte)_programBuffer[_programCounter++];
             this._programCounter = ((ushort)(_programCounter + offSet));
         }
 
@@ -39,6 +39,7 @@ namespace Project6502
             this._processorStatusFlags[6] = false;
         }
 
+        #region stack operations
         /// <summary>
         /// TSX
         /// Implied
@@ -54,6 +55,8 @@ namespace Project6502
         {
             this._stackPointer = XRegister;
         }
+        #endregion
+        #region Register Transfers
         /// <summary>
         /// TYA
         /// </summary>
@@ -121,41 +124,7 @@ namespace Project6502
                 this._processorStatusFlags[1] = true;
             }
         }
-
-
-
-        /// <summary>
-        /// ROL
-        /// </summary>
-        void ROtateLeft(byte operation)
-        {
-            var operand = (byte)(operation switch
-            {
-                0x2A => Accumulator,
-                0x26 => memory[_programBuffer[_programCounter ++]],
-                0x36 => memory[_programBuffer[_programCounter ++] + XRegister],
-                0x2E => memory[(_programBuffer[_programCounter ++] + _programBuffer[_programCounter ++])],
-                0x3E => memory[(_programBuffer[_programCounter ++] + _programBuffer[_programCounter ++])] + XRegister
-            });
-            var value = byte.RotateLeft(operand, 1) + (_processorStatusFlags[0] ? 1 : 0);
-            _processorStatusFlags[0] = (operand >> 7) == 1 ? true : _processorStatusFlags[0];
-        }
-        /// <summary>
-        /// ROR
-        /// </summary>
-        void ROtateRight(byte operation)
-        {
-            var operand = (byte)(operation switch
-            {
-                0x6A => Accumulator,
-                0x66 => memory[_programBuffer[_programCounter ++]],
-                0x76 => memory[_programBuffer[_programCounter ++] + XRegister],
-                0x6E => memory[(_programBuffer[_programCounter ++] + _programBuffer[_programCounter ++])],
-                0x7E => memory[(_programBuffer[_programCounter ++] + _programBuffer[_programCounter ++])] + XRegister
-            });
-            var value = byte.RotateRight(operand, 1) + (_processorStatusFlags[0] ? 128 : 0);
-            _processorStatusFlags[0] = (byte)(operand & 1) == 1 ? true : _processorStatusFlags[0];
-        }
+        #endregion
 
         #region LoadStoreOperations
         /// <summary>
@@ -167,17 +136,17 @@ namespace Project6502
             var operand = operation switch
             {
                 0xA9 => ImmediateConstant(),
-                0xA5 => ZeroPage(),
-                0xB5 => ZeroPage_X(),
-                0xAD => Absolute(),
-                0xBD => Absolute_X(),
-                0xB9 => Absolute_Y(),
-                0xA1 => Indirect_X(),
-                0xB1 => Indirect_Y(),
+                0xA5 => memory[ZeroPage()],
+                0xB5 => memory[ZeroPage_X()],
+                0xAD => memory[Absolute()],
+                0xBD => memory[Absolute_X()],
+                0xB9 => memory[Absolute_Y()],
+                0xA1 => memory[Indirect_X()],
+                0xB1 => memory[Indirect_Y()],
 
-            } ;
+            };
             Accumulator = operand;
-            if(Accumulator == 0)
+            if (Accumulator == 0)
             {
                 _processorStatusFlags[1] = true;
             }
@@ -186,7 +155,7 @@ namespace Project6502
                 _processorStatusFlags[7] = (operand >> 7) == 1 ? true : _processorStatusFlags[7];
             }
         }
-        
+
         /// <summary>
         /// LDX
         /// </summary>
@@ -196,10 +165,10 @@ namespace Project6502
             var operand = (byte)(operation switch
             {
                 0xA2 => ImmediateConstant(),
-                0xA6 => ZeroPage(),
-                0xB6 => ZeroPage_Y(),
-                0xAE => Absolute(),
-                0xBE => Absolute_Y()
+                0xA6 => memory[ZeroPage()],
+                0xB6 => memory[ZeroPage_Y()],
+                0xAE => memory[Absolute()],
+                0xBE => memory[Absolute_Y()]
             });
             XRegister = operand;
             if (XRegister == 0)
@@ -220,10 +189,10 @@ namespace Project6502
             var operand = (byte)(operation switch
             {
                 0xA0 => ImmediateConstant(),
-                0xA4 => ZeroPage(),
-                0xB4 => ZeroPage_X(),
-                0xAC => Absolute(),
-                0xBC => Absolute_X()
+                0xA4 => memory[ZeroPage()],
+                0xB4 => memory[ZeroPage_X()],
+                0xAC => memory[Absolute()],
+                0xBC => memory[Absolute_X()]
             });
             YRegister = operand;
             if (YRegister == 0)
@@ -251,10 +220,10 @@ namespace Project6502
                 //0x99 => (_programBuffer[_programCounter++] << 8 | _programBuffer[_programCounter++]) + YRegister,
                 //0x81 => (((byte)((_programBuffer[_programCounter] + XRegister+1) & 0xFF) + 1) << 8 | (byte)((_programBuffer[_programCounter++] + XRegister) & 0xFF)),
                 //0x91 => (byte)(_programBuffer[_programCounter] + XRegister + 1) << 8 | (_programBuffer[_programCounter++] + XRegister)
-                0x85 => _programBuffer[_programCounter++],
-                0x95 => (_programBuffer[_programCounter++] + XRegister) & 0xFF,
-                0x8D => _programBuffer.Absolute(_programCounter++),
-                0x9D => _programBuffer.Absolute(_programCounter) + XRegister,
+                0x85 => ImmediateConstant(),
+                0x95 => ZeroPage_X(),
+                0x8D => Absolute(),
+                0x9D => Absolute_X(),
                 0x99 => Absolute_Y(),
                 0x81 => Indirect_X(),
                 0x91 => Indirect_Y(),
@@ -283,7 +252,7 @@ namespace Project6502
             var operand = operation switch
             {
                 0x84 => ZeroPage(),
-                0x94 => ZeroPage_Y(),
+                0x94 => ZeroPage_X(),
                 0x8C => Absolute(),
             };
 
@@ -292,28 +261,69 @@ namespace Project6502
 
         #endregion
 
+
+        /// <summary>
+        /// ROL
+        /// </summary>
+        void ROtateLeft(byte operation)
+        {
+            var operand = (byte)(operation switch
+            {
+                0x2A => Accumulator,
+                0x26 => memory[_programBuffer[_programCounter++]],
+                0x36 => memory[_programBuffer[_programCounter++] + XRegister],
+                0x2E => memory[(_programBuffer[_programCounter++] + _programBuffer[_programCounter++])],
+                0x3E => memory[(_programBuffer[_programCounter++] + _programBuffer[_programCounter++])] + XRegister
+            });
+            var value = byte.RotateLeft(operand, 1) + (_processorStatusFlags[0] ? 1 : 0);
+            _processorStatusFlags[0] = (operand >> 7) == 1 ? true : _processorStatusFlags[0];
+        }
+        /// <summary>
+        /// ROR
+        /// </summary>
+        void ROtateRight(byte operation)
+        {
+            var operand = (byte)(operation switch
+            {
+                0x6A => Accumulator,
+                0x66 => memory[_programBuffer[_programCounter++]],
+                0x76 => memory[_programBuffer[_programCounter++] + XRegister],
+                0x6E => memory[(_programBuffer[_programCounter++] + _programBuffer[_programCounter++])],
+                0x7E => memory[(_programBuffer[_programCounter++] + _programBuffer[_programCounter++])] + XRegister
+            });
+            var value = byte.RotateRight(operand, 1) + (_processorStatusFlags[0] ? 128 : 0);
+            _processorStatusFlags[0] = (byte)(operand & 1) == 1 ? true : _processorStatusFlags[0];
+        }
+        #region Addressing
         private byte ImmediateConstant() => _programBuffer[_programCounter++];
 
-        private byte ZeroPage() => memory[_programBuffer[_programCounter++]];
+        private int ZeroPage() => _programBuffer[_programCounter++];
 
-        private byte ZeroPage_X() => memory[(_programBuffer[_programCounter++] + XRegister) & 0xFF];
-        private byte ZeroPage_Y() => memory[(_programBuffer[_programCounter++] + YRegister) & 0xFF];
-        private byte Absolute() => memory[_programBuffer.Absolute(_programCounter)];
+        private int ZeroPage_X() => (_programBuffer[_programCounter++] + XRegister) & 0xFF;
+        private int ZeroPage_Y() => (_programBuffer[_programCounter++] + YRegister) & 0xFF;
 
-        private byte Absolute_X() => memory[_programBuffer.Absolute(_programCounter) + XRegister];
-        
-        private byte Absolute_Y() => memory[_programBuffer.Absolute(_programCounter) + YRegister];
+        private int Absolute() => _programBuffer.Absolute(_programCounter);
+        private int Absolute_X() => _programBuffer.Absolute(_programCounter) + XRegister;
+        private int Absolute_Y() => _programBuffer.Absolute(_programCounter) + YRegister;
 
-        private byte Indirect_X() => memory.ToIndexedIndirectX((byte)((_programBuffer[_programCounter++] + XRegister) & 0xFF)); // Indexed Indirect x ($,X)
+        /// <summary>
+        /// This is a pig but (val),x = val+x.
+        /// msb = mem[val+x+1 &0xFF]
+        /// lsb = mem[val+x & 0xFF]
+        /// The indirect bit is having to query the memory
+        /// </summary>
+        /// <returns></returns>
+        private int Indirect_X() => (memory[((_programBuffer[_programCounter] + XRegister) & 0xFF) + 1] << 8 | memory[((_programBuffer[_programCounter++] + XRegister) & 0xFF)]); // Indexed Indirect x ($,X)
+        private int Indirect_Y() => (memory[_programBuffer[_programCounter] + 1] << 8 | memory[_programBuffer[_programCounter++]]) + YRegister;
+        #endregion
 
-        private byte Indirect_Y() => memory.ToIndirectIndexY(_programBuffer[_programCounter++], YRegister); // INdreict index Y ($),y
 
 
 
         void Jump()
         {
-            var bottom = memory[_programBuffer[_programCounter ++]];
-            var top = memory[_programBuffer[_programCounter ++]];
+            var bottom = memory[_programBuffer[_programCounter++]];
+            var top = memory[_programBuffer[_programCounter++]];
             _programCounter = (ushort)(top << 7 | bottom);
         }
 

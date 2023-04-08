@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace _6502_Testing
 {
     [TestClass]
-    public class LDYTests
+    public class LDY
     {
         Six502Processor createProcessor() => new Six502Processor(new byte[ushort.MaxValue]);
         Six502Processor createProcessor(byte[] mem) => new Six502Processor(mem);
@@ -117,13 +117,12 @@ namespace _6502_Testing
             mem[65281 + 16] = 100;
             var processor = createProcessor(mem);
 
-
             var program = new byte[]
             {
                 //!-- Preamble
                 0xA9, // LDA #16 (Immediate)
                 0x10,
-                0xAA,  // TAA x = 16
+                0xAA,  // TAX x = 16
 
                 0xBC,
                 0xFF,
