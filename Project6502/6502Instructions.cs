@@ -56,6 +56,7 @@ namespace Project6502
             this._stackPointer = XRegister;
         }
         #endregion
+
         #region Register Transfers
         /// <summary>
         /// TYA
