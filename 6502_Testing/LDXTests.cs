@@ -29,7 +29,7 @@ namespace _6502_Testing
         }
 
         [TestMethod("LDX : Zero Page")]
-        public void LDAZeroPage()
+        public void LDXZeroPage()
         {
             // put a value in the zero page (0->FF)
             var mem = new byte[ushort.MaxValue];
@@ -51,7 +51,7 @@ namespace _6502_Testing
         }
 
         [TestMethod("LDX : Zero Page.Y")]
-        public void LDAZeroPageY()
+        public void LDXZeroPageY()
         {
             // put a value in the zero page (0->FF)
             var mem = new byte[ushort.MaxValue];

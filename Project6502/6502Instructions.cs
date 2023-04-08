@@ -272,8 +272,6 @@ namespace Project6502
                 0x86 => ZeroPage(),
                 0x96 => ZeroPage_Y(),
                 0x8E => Absolute(),
-
-
             };
 
             memory[operand] = XRegister;
