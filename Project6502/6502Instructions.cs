@@ -1,4 +1,6 @@
-﻿namespace Project6502
+﻿using System.Xml.Serialization;
+
+namespace Project6502
 {
     public partial class Six502Processor
     {
@@ -155,6 +157,7 @@
             _processorStatusFlags[0] = (byte)(operand & 1) == 1 ? true : _processorStatusFlags[0];
         }
 
+        #region LoadStoreOperations
         /// <summary>
         /// LDA
         /// </summary>
@@ -193,10 +196,10 @@
             var operand = (byte)(operation switch
             {
                 0xA2 => ImmediateConstant(),
-                0xAb => ZeroPage(),
+                0xA6 => ZeroPage(),
                 0xB6 => ZeroPage_Y(),
                 0xAE => Absolute(),
-                0xBe => Absolute_Y()
+                0xBE => Absolute_Y()
             });
             XRegister = operand;
             if (XRegister == 0)
@@ -208,7 +211,10 @@
                 _processorStatusFlags[7] = (operand >> 7) == 1 ? true : _processorStatusFlags[7];
             }
         }
-
+        /// <summary>
+        /// LDY
+        /// </summary>
+        /// <param name="operation"></param>
         void LoaDIntoYregister(byte operation)
         {
             var operand = (byte)(operation switch
@@ -216,7 +222,7 @@
                 0xA0 => ImmediateConstant(),
                 0xA4 => ZeroPage(),
                 0xB4 => ZeroPage_X(),
-                0xAc => Absolute(),
+                0xAC => Absolute(),
                 0xBC => Absolute_X()
             });
             YRegister = operand;
@@ -229,7 +235,64 @@
                 _processorStatusFlags[7] = (operand >> 7) == 1 ? true : _processorStatusFlags[7];
             }
         }
+        /// <summary>
+        /// STA
+        /// </summary>
+        /// <param name="operation"></param>
+        void StoreTheAccumulator(byte operation)
+        {
+            // Gets the memory address that we are poking with our value
+            var operand = operation switch
+            {
+                //0x85 => _programBuffer[_programCounter++],
+                //0x96 => _programBuffer[_programCounter++] + XRegister,
+                //0x8D => (_programBuffer[_programCounter++] << 8 | _programBuffer[_programCounter++]),
+                //0x9D => (_programBuffer[_programCounter++] << 8 | _programBuffer[_programCounter++]) + XRegister,
+                //0x99 => (_programBuffer[_programCounter++] << 8 | _programBuffer[_programCounter++]) + YRegister,
+                //0x81 => (((byte)((_programBuffer[_programCounter] + XRegister+1) & 0xFF) + 1) << 8 | (byte)((_programBuffer[_programCounter++] + XRegister) & 0xFF)),
+                //0x91 => (byte)(_programBuffer[_programCounter] + XRegister + 1) << 8 | (_programBuffer[_programCounter++] + XRegister)
+                0x85 => ZeroPage(),
+                0x95 => ZeroPage_X(),
+                0x8D => Absolute(),
+                0x9D => Absolute_X(),
+                0x99 => Absolute_Y(),
+                0x81 => Indirect_X(),
+                0x91 => Indirect_Y(),
 
+            };
+
+            memory[operand] = Accumulator;
+        }
+
+        void StoreTheXregister(byte operation)
+        {
+            // Gets the memory address that we are poking with our value
+            var operand = operation switch
+            {
+                0x86 => ZeroPage(),
+                0x96 => ZeroPage_Y(),
+                0x8E => Absolute(),
+
+
+            };
+
+            memory[operand] = XRegister;
+        }
+
+        void StoreTheYregister(byte operation)
+        {
+            // Gets the memory address that we are poking with our value
+            var operand = operation switch
+            {
+                0x84 => ZeroPage(),
+                0x94 => ZeroPage_Y(),
+                0x8C => Absolute(),
+            };
+
+            memory[operand] = YRegister;
+        }
+
+        #endregion
 
         private byte ImmediateConstant() => _programBuffer[_programCounter++];
 

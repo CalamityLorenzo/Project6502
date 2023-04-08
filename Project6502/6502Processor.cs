@@ -48,7 +48,8 @@ namespace Project6502
         /// This can be as big as it needs, we can only see the first 16bits
         /// </summary>
         /// <param name="memory"></param>
-        public Six502Processor(byte[] memory) {
+        public Six502Processor(byte[] memory)
+        {
             this.memory = memory;
         }
 
@@ -59,14 +60,13 @@ namespace Project6502
             {"Y", YRegister.ToString()},
             {"SP", YRegister.ToString()},
             {"PC", _programCounter.ToString()},
-            {"ProcessorStatus", String.Join("\n",new String []{
-                        $"C : {_processorStatusFlags[0]}",
-                        $"Z : {_processorStatusFlags[1]}",
-                        $"I : {_processorStatusFlags[2]}",
-                        $"D : {_processorStatusFlags[3]}",
-                        $"B : {_processorStatusFlags[4]}",
-                        $"V : {_processorStatusFlags[5]}" })}
-        };
+            {"C",_processorStatusFlags[0].ToString()},
+            {"Z",_processorStatusFlags[1].ToString()},
+            {"I",_processorStatusFlags[2].ToString()},
+            {"D",_processorStatusFlags[3].ToString()},
+            {"B",_processorStatusFlags[4].ToString()},
+            {"V",_processorStatusFlags[5].ToString()}
+};
 
 
         void Reset() { }
@@ -76,7 +76,7 @@ namespace Project6502
         {
             _programCounter = 0; ;
             _programBuffer = buffer;
-            while(_programCounter < buffer.Length)
+            while (_programCounter < buffer.Length)
             {
                 // do many things.
                 var instruction = buffer[_programCounter++];
@@ -91,7 +91,7 @@ namespace Project6502
                         break;
                     case 0xD8: // CLD
                         CLearDecimal();
-                        break;  
+                        break;
                     case 0x58: // CLI
                         CLearInterrupt();
                         break;
@@ -107,19 +107,19 @@ namespace Project6502
 
                     case 0x98: // TYA
                         TransferYToAccumulator();
-                        break; 
+                        break;
                     case 0xA8: // TAY
                         TransferAccumulatorToY();
                         break;
 
                     case 0xAA:
                         TransferAccumulatorToX();
-                    break;
+                        break;
 
                     case 0x8A:
                         TransferXToAccumulator();
-                    break;
-                    
+                        break;
+
 
                     case 0xA9: //LDA
                     case 0xA5:
@@ -137,7 +137,7 @@ namespace Project6502
                     case 0xAE:
                     case 0xBE:
                         LoaDIntoXregister(instruction);
-                    break;
+                        break;
 
                     case 0xA0:
                     case 0xA4:
@@ -145,21 +145,43 @@ namespace Project6502
                     case 0xAC:
                     case 0xBC:
                         LoaDIntoYregister(instruction);
-                      break;
+                        break;
+
+                    case 0x85:
+                    case 0x95:
+                    case 0x8D:
+                    case 0x9D:
+                    case 0x99:
+                    case 0x81:
+                    case 0x91:
+                        StoreTheAccumulator(instruction);
+                        break;
+
+                    case 0x86:
+                    case 0x96:
+                    case 0x8E:
+                        StoreTheXregister(instruction);
+                        break;
+                    case 0x84:
+                    case 0x94:
+                    case 0x8C:
+                        StoreTheYregister(instruction);
+                        break;
+
                     case 0x2A: // ROL
                     case 0x26:
                     case 0x36:
                     case 0x2E:
                     case 0x3E:
                         ROtateLeft(instruction);
-                    break;
+                        break;
                     case 0x6A: // ROR
                     case 0x66:
                     case 0x76:
                     case 0x6E:
                     case 0x7E:
                         ROtateRight(instruction);
-                     break;
+                        break;
 
 
                 }
