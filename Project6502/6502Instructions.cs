@@ -44,7 +44,7 @@ namespace Project6502
         /// TSX
         /// Implied
         /// </summary>
-        void TransferStackPointertoX()
+        void TransferStackpointertoX()
         {
             this.XRegister = _stackPointer;
             CheckNegativeZeroFlags(XRegister);
@@ -62,16 +62,16 @@ namespace Project6502
         /// <summary>
         /// PHA
         /// </summary>
-        void PushAccumulator()
+        void PusHAccumulator()
         {
-            memory[_stackPointer--] = Accumulator;
+            memory[(0x01<<8 | _stackPointer--)] = Accumulator;
         }
         /// <summary>
         /// PLA
         /// </summary>
-        void PullAccumulator()
+        void PulLAccumulator()
         {
-            Accumulator = memory[_stackPointer++];
+            Accumulator = memory[(0x01 << 8 | _stackPointer++)];
             CheckNegativeZeroFlags(Accumulator);
         }
         /// <summary>
@@ -80,12 +80,12 @@ namespace Project6502
         void PusHprocessorStauts()
         {
             byte val =  ConvertFromProcessorStatus();
-            memory[_stackPointer--] = val;
+            memory[(0x01 << 8 | _stackPointer--)] = val;
         }
 
-        void PulLprocessorStatys()
+        void PulLprocessorStatuis()
         {
-            var val = memory[_stackPointer++];
+            var val = memory[(0x01 << 8 | _stackPointer++)];
             ConvertToProcessorStatus(val);
         }
         #endregion

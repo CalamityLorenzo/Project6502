@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Net.Http.Headers;
+using System.Reflection.Emit;
 
 namespace Project6502
 {
@@ -59,14 +60,15 @@ namespace Project6502
             {"A", Accumulator.ToString()},
             {"X", XRegister.ToString()},
             {"Y", YRegister.ToString()},
-            {"SP", YRegister.ToString()},
+            {"SP", _stackPointer.ToString()},
             {"PC", _programCounter.ToString()},
             {"C",_processorStatusFlags[0].ToString()},
             {"Z",_processorStatusFlags[1].ToString()},
             {"I",_processorStatusFlags[2].ToString()},
             {"D",_processorStatusFlags[3].ToString()},
-            {"B",_processorStatusFlags[4].ToString()},
-            {"V",_processorStatusFlags[5].ToString()}
+            {"B",_processorStatusFlags[5].ToString()},
+            {"V",_processorStatusFlags[6].ToString()},
+            {"N",_processorStatusFlags[7].ToString()}
 };
 
         /// <summary>
@@ -84,22 +86,29 @@ namespace Project6502
         private byte ConvertFromProcessorStatus()
         {
             byte result = 0;
-            // take our processor status and make that into a number;
-            for (int x = _processorStatusFlags.Length; x >= 1; x--)
+            var index = 0;
+            foreach (var b in _processorStatusFlags)
             {
-               
-                var currentVal = x == 0 ? 1 : (x * x) * 2;
-                Console.WriteLine($"{x} : {currentVal}");
-                result += _processorStatusFlags[x - 1] ? (byte)currentVal : (byte)0;
+                // binary concat 
+                if (b) // We move the lowest bool index 0 to 7.
+                       // reversing as we go as binary digits are read 'backwards'/reversed.
+                    result |= (byte)(1 << (7 - index));
+                
+                index++;
             }
+
             return result;
         }
 
         private void ConvertToProcessorStatus(byte stackValue)
         {
-            for (var x = 0; x < 8; ++x)
+            var index = 0;
+            var pos = 1;
+            while (index < 8)
             {
-
+                pos = index == 0 ? 1 : pos = pos * 2;
+                _processorStatusFlags[index] = (stackValue & pos) != 0 ? true : false;
+                index++;
             }
         }
 
@@ -132,11 +141,24 @@ namespace Project6502
                     case 0xB8: // CLV
                         CLearoVerflow();
                         break;
+
                     case 0x9A: // TSX
-                        TransferStackPointertoX();
+                        TransferStackpointertoX();
                         break;
                     case 0xBA: // TXS
                         TransferXtoStackPointer();
+                        break;
+                    case 0x48:
+                        PusHAccumulator();
+                        break;
+                    case 0x68:
+                        PulLAccumulator();
+                        break;
+                    case 0x08:
+                        PusHprocessorStauts();
+                        break;
+                    case 0x28:
+                        PulLprocessorStatuis();
                         break;
 
                     case 0x98: // TYA
@@ -146,11 +168,11 @@ namespace Project6502
                         TransferAccumulatorToY();
                         break;
 
-                    case 0xAA:
+                    case 0xAA: // TAX
                         TransferAccumulatorToX();
                         break;
 
-                    case 0x8A:
+                    case 0x8A: // TXA
                         TransferXToAccumulator();
                         break;
 
