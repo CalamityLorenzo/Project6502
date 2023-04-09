@@ -79,8 +79,14 @@ namespace Project6502
         /// </summary>
         void PusHprocessorStauts()
         {
-            byte val =  ConvertProcessorStatus();
+            byte val =  ConvertFromProcessorStatus();
             memory[_stackPointer--] = val;
+        }
+
+        void PulLprocessorStatys()
+        {
+            var val = memory[_stackPointer++];
+            ConvertToProcessorStatus(val);
         }
         #endregion
 
