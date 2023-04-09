@@ -79,8 +79,10 @@ namespace Project6502
         /// <param name="registerValue"></param>
         private void CheckNegativeZeroFlags(byte registerValue)
         {
-            if (registerValue == 0) { _processorStatusFlags[1] = true; return; }
-            if (registerValue > 127) { _processorStatusFlags[7] = true; }
+            // Zero
+            _processorStatusFlags[1] = (registerValue == 0);
+            // Negative.
+            _processorStatusFlags[7] = (registerValue > 127);
         }
 
         private byte ConvertFromProcessorStatus()
@@ -93,7 +95,7 @@ namespace Project6502
                 if (b) // We move the lowest bool index 0 to 7.
                        // reversing as we go as binary digits are read 'backwards'/reversed.
                     result |= (byte)(1 << (7 - index));
-                
+
                 index++;
             }
 
@@ -142,25 +144,27 @@ namespace Project6502
                         CLearoVerflow();
                         break;
 
+                    #region Stack Operations
                     case 0x9A: // TSX
                         TransferStackpointertoX();
                         break;
                     case 0xBA: // TXS
                         TransferXtoStackPointer();
                         break;
-                    case 0x48:
+                    case 0x48: //PHA
                         PusHAccumulator();
                         break;
-                    case 0x68:
+                    case 0x68: // PLA
                         PulLAccumulator();
                         break;
-                    case 0x08:
-                        PusHprocessorStauts();
+                    case 0x08: // PHP
+                        PusHProcessorStatus();
                         break;
-                    case 0x28:
-                        PulLprocessorStatuis();
+                    case 0x28: // PLP
+                        PulLProcessorstatus();
                         break;
-
+                    #endregion Stack Operations
+                    #region Register Transfers
                     case 0x98: // TYA
                         TransferYToAccumulator();
                         break;
@@ -175,8 +179,8 @@ namespace Project6502
                     case 0x8A: // TXA
                         TransferXToAccumulator();
                         break;
-
-
+                    #endregion Register Transfers
+                    #region Load Store Operations
                     case 0xA9: //LDA
                     case 0xA5:
                     case 0xB5:
@@ -223,7 +227,46 @@ namespace Project6502
                     case 0x8C:
                         StoreTheYregister(instruction);
                         break;
+                    #endregion Load Store Operations
+                    #region Logical Operations
+                    case 0x29:
+                    case 0x25:
+                    case 0x35:
+                    case 0x2D:
+                    case 0x3D:
+                    case 0x39:
+                    case 0x21:
+                    case 0x31:
+                        LogicalAND(instruction);
+                        break;
 
+                    case 0x49:
+                    case 0x45:
+                    case 0x55:
+                    case 0x4D:
+                    case 0x5D:
+                    case 0x59:
+                    case 0x41:
+                    case 0x51:
+                        ExclusiveOR(instruction);
+                        break;
+
+                    case 0x09:
+                    case 0x05:
+                    case 0x15:
+                    case 0x0D:
+                    case 0x1D:
+                    case 0x19:
+                    case 0x01:
+                    case 0x11:
+                        LogicalInclusiveOR(instruction);
+                        break;
+
+                    case 0x24:
+                    case 0x2C:
+                        BIT(instruction);
+                        break;
+                    #endregion Logical Operations
                     case 0x2A: // ROL
                     case 0x26:
                     case 0x36:

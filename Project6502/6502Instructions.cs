@@ -64,7 +64,7 @@ namespace Project6502
         /// </summary>
         void PusHAccumulator()
         {
-            memory[(0x01<<8 | _stackPointer--)] = Accumulator;
+            memory[(0x01 << 8 | _stackPointer--)] = Accumulator;
         }
         /// <summary>
         /// PLA
@@ -77,13 +77,13 @@ namespace Project6502
         /// <summary>
         /// PHP
         /// </summary>
-        void PusHprocessorStauts()
+        void PusHProcessorStatus()
         {
-            byte val =  ConvertFromProcessorStatus();
+            byte val = ConvertFromProcessorStatus();
             memory[(0x01 << 8 | _stackPointer--)] = val;
         }
 
-        void PulLprocessorStatuis()
+        void PulLProcessorstatus()
         {
             var val = memory[(0x01 << 8 | _stackPointer++)];
             ConvertToProcessorStatus(val);
@@ -238,6 +238,92 @@ namespace Project6502
 
         #endregion
 
+        #region Logical Operations
+        /// <summary>
+        /// AND
+        /// </summary>
+        /// <param name="operation"></param>
+        void LogicalAND(byte operation)
+        {
+            var operand = operation switch
+            {
+                0x29 => ImmediateConstant(),
+                0x25 => memory[ZeroPage()],
+                0x35 => memory[ZeroPage_X()],
+                0x2D => memory[Absolute()],
+                0x3D => memory[Absolute_X()],
+                0x39 => memory[Absolute_Y()],
+                0x21 => memory[Indirect_X()],
+                0x31 => memory[Indirect_Y()],
+            };
+            var val = Accumulator & operand;
+            Accumulator = (byte)val;
+            CheckNegativeZeroFlags(Accumulator);
+
+        }
+        /// <summary>
+        /// EOR
+        /// </summary>
+        /// <param name="operation"></param>
+        void ExclusiveOR(byte operation)
+        {
+            var operand = operation switch
+            {
+                0x49 => ImmediateConstant(),
+                0x45 => memory[ZeroPage()],
+                0x55 => memory[ZeroPage_X()],
+                0x4D => memory[Absolute()],
+                0x5D => memory[Absolute_X()],
+                0x59 => memory[Absolute_Y()],
+                0x41 => memory[Indirect_X()],
+                0x51 => memory[Indirect_Y()],
+            };
+            var val = Accumulator ^ operand;
+            Accumulator = (byte)val;
+            CheckNegativeZeroFlags(Accumulator);
+        }
+        /// <summary>
+        /// ORA
+        /// </summary>
+        /// <param name="operation"></param>
+        void LogicalInclusiveOR(byte operation)
+        {
+            var operand = operation switch
+            {
+                0x09 => ImmediateConstant(),
+                0x05 => memory[ZeroPage()],
+                0x15 => memory[ZeroPage_X()],
+                0x0D => memory[Absolute()],
+                0x1D => memory[Absolute_X()],
+                0x19 => memory[Absolute_Y()],
+                0x41 => memory[Indirect_X()],
+                0x11 => memory[Indirect_Y()],
+            };
+            var val = Accumulator | operand;
+            Accumulator = (byte)val;
+            CheckNegativeZeroFlags(Accumulator);
+        }
+        /// <summary>
+        /// BIT
+        /// </summary>
+        /// <param name=""></param>
+        void BIT(byte operation)
+        {
+            var operand = operation switch
+            {
+                0x24 => ZeroPage(),
+                0x2C => Absolute(),
+            };
+
+            var memVal = memory[operand];
+            if ((Accumulator & memVal) == 0)
+                _processorStatusFlags[1] = true;
+            // Bits 6 and 7 are copied to Verlfow and Negative flag.
+            _processorStatusFlags[6] = (memVal & 0x40) == 0; 
+            _processorStatusFlags[7] = (memVal & 0x80) == 0;
+        }
+
+        #endregion
 
         /// <summary>
         /// ROL
@@ -273,7 +359,7 @@ namespace Project6502
         }
 
         #region Address Modes
-        private byte ImmediateConstant() => _programBuffer[_programCounter++];
+         private byte ImmediateConstant() => _programBuffer[_programCounter++];
 
         private int ZeroPage() => _programBuffer[_programCounter++];
 
