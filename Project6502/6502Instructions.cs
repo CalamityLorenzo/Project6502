@@ -47,13 +47,40 @@ namespace Project6502
         void TransferStackPointertoX()
         {
             this.XRegister = _stackPointer;
+            CheckNegativeZeroFlags(XRegister);
+
         }
+
         /// <summary>
         /// TXS
         /// </summary>
         void TransferXtoStackPointer()
         {
             this._stackPointer = XRegister;
+        }
+
+        /// <summary>
+        /// PHA
+        /// </summary>
+        void PushAccumulator()
+        {
+            memory[_stackPointer--] = Accumulator;
+        }
+        /// <summary>
+        /// PLA
+        /// </summary>
+        void PullAccumulator()
+        {
+            Accumulator = memory[_stackPointer++];
+            CheckNegativeZeroFlags(Accumulator);
+        }
+        /// <summary>
+        /// PHP
+        /// </summary>
+        void PusHprocessorStauts()
+        {
+            byte val =  ConvertProcessorStatus();
+            memory[_stackPointer--] = val;
         }
         #endregion
 
@@ -64,15 +91,8 @@ namespace Project6502
         void TransferYToAccumulator()
         {
             this.Accumulator = YRegister;
-            if (Accumulator > 127)
-            {
-                this._processorStatusFlags[7] = true;
-                return;
-            }
-            if (Accumulator == 0)
-            {
-                this._processorStatusFlags[1] = true;
-            }
+            CheckNegativeZeroFlags(YRegister);
+
         }
 
         /// <summary>
@@ -81,15 +101,8 @@ namespace Project6502
         void TransferAccumulatorToY()
         {
             YRegister = this.Accumulator;
-            if (Accumulator > 127)
-            {
-                this._processorStatusFlags[7] = true;
-                return;
-            }
-            if (Accumulator == 0)
-            {
-                this._processorStatusFlags[1] = true;
-            }
+            CheckNegativeZeroFlags(Accumulator);
+
         }
 
         /// <summary>
@@ -98,15 +111,8 @@ namespace Project6502
         void TransferXToAccumulator()
         {
             this.Accumulator = XRegister;
-            if (Accumulator > 127)
-            {
-                this._processorStatusFlags[7] = true;
-                return;
-            }
-            if (Accumulator == 0)
-            {
-                this._processorStatusFlags[1] = true;
-            }
+            CheckNegativeZeroFlags(Accumulator);
+
         }
 
         /// <summary>
@@ -115,15 +121,7 @@ namespace Project6502
         void TransferAccumulatorToX()
         {
             XRegister = this.Accumulator;
-            if (Accumulator > 127)
-            {
-                this._processorStatusFlags[7] = true;
-                return;
-            }
-            if (Accumulator == 0)
-            {
-                this._processorStatusFlags[1] = true;
-            }
+            CheckNegativeZeroFlags(Accumulator);
         }
         #endregion
 
@@ -147,14 +145,8 @@ namespace Project6502
 
             };
             Accumulator = operand;
-            if (Accumulator == 0)
-            {
-                _processorStatusFlags[1] = true;
-            }
-            else
-            {
-                _processorStatusFlags[7] = (operand >> 7) == 1 ? true : _processorStatusFlags[7];
-            }
+            CheckNegativeZeroFlags(Accumulator);
+
         }
 
         /// <summary>
@@ -172,14 +164,7 @@ namespace Project6502
                 0xBE => memory[Absolute_Y()]
             });
             XRegister = operand;
-            if (XRegister == 0)
-            {
-                _processorStatusFlags[1] = true;
-            }
-            else
-            {
-                _processorStatusFlags[7] = (operand >> 7) == 1 ? true : _processorStatusFlags[7];
-            }
+            CheckNegativeZeroFlags(XRegister);
         }
         /// <summary>
         /// LDY
@@ -196,14 +181,7 @@ namespace Project6502
                 0xBC => memory[Absolute_X()]
             });
             YRegister = operand;
-            if (YRegister == 0)
-            {
-                _processorStatusFlags[1] = true;
-            }
-            else
-            {
-                _processorStatusFlags[7] = (operand >> 7) == 1 ? true : _processorStatusFlags[7];
-            }
+            CheckNegativeZeroFlags(YRegister);
         }
         /// <summary>
         /// STA
@@ -214,13 +192,6 @@ namespace Project6502
             // Gets the memory address that we are poking with our value
             var operand = operation switch
             {
-                //0x85 => _programBuffer[_programCounter++],
-                //0x96 => _programBuffer[_programCounter++] + XRegister,
-                //0x8D => (_programBuffer[_programCounter++] << 8 | _programBuffer[_programCounter++]),
-                //0x9D => (_programBuffer[_programCounter++] << 8 | _programBuffer[_programCounter++]) + XRegister,
-                //0x99 => (_programBuffer[_programCounter++] << 8 | _programBuffer[_programCounter++]) + YRegister,
-                //0x81 => (((byte)((_programBuffer[_programCounter] + XRegister+1) & 0xFF) + 1) << 8 | (byte)((_programBuffer[_programCounter++] + XRegister) & 0xFF)),
-                //0x91 => (byte)(_programBuffer[_programCounter] + XRegister + 1) << 8 | (_programBuffer[_programCounter++] + XRegister)
                 0x85 => ImmediateConstant(),
                 0x95 => ZeroPage_X(),
                 0x8D => Absolute(),
@@ -228,7 +199,6 @@ namespace Project6502
                 0x99 => Absolute_Y(),
                 0x81 => Indirect_X(),
                 0x91 => Indirect_Y(),
-
             };
 
             memory[operand] = Accumulator;
@@ -295,7 +265,8 @@ namespace Project6502
             var value = byte.RotateRight(operand, 1) + (_processorStatusFlags[0] ? 128 : 0);
             _processorStatusFlags[0] = (byte)(operand & 1) == 1 ? true : _processorStatusFlags[0];
         }
-        #region Addressing
+
+        #region Address Modes
         private byte ImmediateConstant() => _programBuffer[_programCounter++];
 
         private int ZeroPage() => _programBuffer[_programCounter++];

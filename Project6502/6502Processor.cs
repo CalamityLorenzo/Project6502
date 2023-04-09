@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Net.Http.Headers;
 
 namespace Project6502
@@ -68,6 +69,39 @@ namespace Project6502
             {"V",_processorStatusFlags[5].ToString()}
 };
 
+        /// <summary>
+        /// Helper for sett status a value for 
+        /// Zero (psp[1])
+        /// Negative (psp[7])
+        /// </summary>
+        /// <param name="registerValue"></param>
+        private void CheckNegativeZeroFlags(byte registerValue)
+        {
+            if (registerValue == 0) { _processorStatusFlags[1] = true; return; }
+            if (registerValue > 127) { _processorStatusFlags[7] = true; }
+        }
+
+        private byte ConvertFromProcessorStatus()
+        {
+            byte result = 0;
+            // take our processor status and make that into a number;
+            for (int x = _processorStatusFlags.Length; x >= 1; x--)
+            {
+               
+                var currentVal = x == 0 ? 1 : (x * x) * 2;
+                Console.WriteLine($"{x} : {currentVal}");
+                result += _processorStatusFlags[x - 1] ? (byte)currentVal : (byte)0;
+            }
+            return result;
+        }
+
+        private void ConvertToProcessorStatus(byte stackValue)
+        {
+            for (var x = 0; x < 8; ++x)
+            {
+
+            }
+        }
 
         void Reset() { }
 
