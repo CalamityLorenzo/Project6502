@@ -296,7 +296,7 @@ namespace Project6502
                 0x0D => memory[Absolute()],
                 0x1D => memory[Absolute_X()],
                 0x19 => memory[Absolute_Y()],
-                0x41 => memory[Indirect_X()],
+                0x01 => memory[Indirect_X()],
                 0x11 => memory[Indirect_Y()],
             };
             var val = Accumulator | operand;
