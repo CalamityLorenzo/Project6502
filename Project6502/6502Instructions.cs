@@ -147,7 +147,7 @@ namespace Project6502
                 0xB9 => memory[Absolute_Y()],
                 0xA1 => memory[Indirect_X()],
                 0xB1 => memory[Indirect_Y()],
-
+                _ => throw new NotImplementedException($"{operation.ToString()} : {Convert.ToString(operation, toBase:16)}"),
             };
             Accumulator = operand;
             CheckNegativeZeroFlags(Accumulator);
@@ -437,11 +437,32 @@ namespace Project6502
             }
         }
         #endregion shifts
-        void Jump()
+        void Jump(byte operation)
         {
-            var bottom = memory[_programBuffer[_programCounter++]];
-            var top = memory[_programBuffer[_programCounter++]];
-            _programCounter = (ushort)(top << 7 | bottom);
+            var operand = operation switch
+            {
+                0x4C => Absolute(),
+                0x6C => Indirect()
+            }; 
+            _programCounter = (ushort)operand;
+        }
+
+        void JumptoSubRoutine()
+        {
+            var operand  = Absolute();
+            // Skip the operands for the command.
+            _programCounter++;
+            _programCounter++; 
+            // Set ther return address
+            memory[_stackPointer++] = (byte)(_programCounter >> 8);
+            memory[_stackPointer++] = (byte)(_programCounter & 0xFF);
+            _programCounter = (ushort)operand;
+        }
+
+        void ReturnfromSubroutine()
+        {
+            var newProgramCounter = (memory[_stackPointer--] <<8 ) | memory[_stackPointer--];
+            _programCounter = (ushort)newProgramCounter;
         }
 
     }

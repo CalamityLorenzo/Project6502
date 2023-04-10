@@ -137,7 +137,8 @@ namespace Project6502
         /// </summary>
         /// <returns></returns>
         private int Indirect_X() => (memory[((_programBuffer[_programCounter] + XRegister) & 0xFF) + 1] << 8 | memory[((_programBuffer[_programCounter++] + XRegister) & 0xFF)]); // Indexed Indirect x ($,X)
-        private int Indirect_Y() => (memory[_programBuffer[_programCounter] + 1] << 8 | memory[_programBuffer[_programCounter++]]) + YRegister;
+        private int Indirect_Y() => (memory[_programBuffer[_programCounter] + 1] << 8 | memory[_programBuffer[_programCounter++]]) + YRegister; // Indirect  + Index Y
+        private int Indirect() => (memory[(_programBuffer[_programCounter] ) << 8 | (_programBuffer[++_programCounter])]); // Straight indirection 16bit address points to lsb where the actul thing is happening.
         #endregion
 
         // We program is passed in as bytesm and thus already parsed.
@@ -223,7 +224,7 @@ namespace Project6502
                         LoaDIntoXregister(instruction);
                         break;
 
-                    case 0xA0:
+                    case 0xA0: //LDY
                     case 0xA4:
                     case 0xB4:
                     case 0xAC:
@@ -231,7 +232,7 @@ namespace Project6502
                         LoaDIntoYregister(instruction);
                         break;
 
-                    case 0x85:
+                    case 0x85: // STA
                     case 0x95:
                     case 0x8D:
                     case 0x9D:
@@ -241,19 +242,19 @@ namespace Project6502
                         StoreTheAccumulator(instruction);
                         break;
 
-                    case 0x86:
+                    case 0x86: // STX
                     case 0x96:
                     case 0x8E:
                         StoreTheXregister(instruction);
                         break;
-                    case 0x84:
+                    case 0x84: // STY
                     case 0x94:
                     case 0x8C:
                         StoreTheYregister(instruction);
                         break;
                     #endregion Load Store Operations
                     #region Logical Operations
-                    case 0x29:
+                    case 0x29: // AND
                     case 0x25:
                     case 0x35:
                     case 0x2D:
@@ -264,7 +265,7 @@ namespace Project6502
                         LogicalAND(instruction);
                         break;
 
-                    case 0x49:
+                    case 0x49: //EOR
                     case 0x45:
                     case 0x55:
                     case 0x4D:
@@ -275,7 +276,7 @@ namespace Project6502
                         ExclusiveOR(instruction);
                         break;
 
-                    case 0x09:
+                    case 0x09: // ORA
                     case 0x05:
                     case 0x15:
                     case 0x0D:
@@ -286,12 +287,12 @@ namespace Project6502
                         LogicalInclusiveOR(instruction);
                         break;
 
-                    case 0x24:
+                    case 0x24: // BIT
                     case 0x2C:
                         BIT(instruction);
                         break;
                     #endregion Logical Operations
-
+                    #region Shift
                     case 0x0A:
                     case 0x06:
                     case 0x16:
@@ -321,12 +322,23 @@ namespace Project6502
                     case 0x7E:
                         ROtateRight(instruction);
                         break;
-
-
+                    #endregion Shift
+                    #region Jumps and Calls
+                    case 0x4C: //JMP
+                    case 0x6C:
+                        Jump(instruction);
+                        break;
+                    case 0x20: // JSR
+                        JumptoSubRoutine();
+                        break;
+                    case 0x60: // RTS
+                        ReturnfromSubroutine();
+                        break;
+                        #endregion Jumps and Calls
                 }
 
                 // 16 bit addressing
-               // _programCounter += 1;
+                // _programCounter += 1;
             }
         }
     }
