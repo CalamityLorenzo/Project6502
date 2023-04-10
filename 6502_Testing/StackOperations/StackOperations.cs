@@ -1,15 +1,10 @@
 ﻿using Project6502;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace _6502_Testing
+namespace StackOperations
 {
     [TestClass]
-    public class StackOperations
+    public class StackOps
     {
         Six502Processor createProcessor() => new Six502Processor(new byte[ushort.MaxValue]);
         Six502Processor createProcessor(byte[] mem) => new Six502Processor(mem);
@@ -110,7 +105,7 @@ namespace _6502_Testing
             Assert.IsTrue(r["N"] == "True"); // FUCKING VB!!
             Assert.IsTrue(mem[510] == 129);
             processor.Process(program);
-          
+
         }
 
         [TestMethod("PHP")]

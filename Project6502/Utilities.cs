@@ -8,7 +8,7 @@ namespace Project6502
 {
     internal static class Utilities
     {
-        public static ushort Absolute(this byte[] @this, ushort firstPosition)
+        public static ushort Absolute(this byte[] @this, ref ushort firstPosition)
         {
             return (ushort)(@this[firstPosition++] << 8 | @this[firstPosition ++]);
         }

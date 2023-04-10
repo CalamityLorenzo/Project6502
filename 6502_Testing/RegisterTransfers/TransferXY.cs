@@ -1,7 +1,8 @@
-﻿using Project6502;
+﻿using LoadStoreOperations;
+using Project6502;
 using System.Diagnostics;
 
-namespace _6502_Testing
+namespace RegisterTransfers
 {
     [TestClass]
     public class TransferXY
@@ -35,16 +36,24 @@ namespace _6502_Testing
 
             var program = new byte[]
             {
+                0xA2, // LDx #70
+                0xFF,
+
                 0xA9,
                 0x25, // 37 in decimal money,
+                
                 0x8A
             };
             processor.Process(program);
             var registers = processor.Registers();
             Trace.WriteLine($"A {registers["A"]}");
             Trace.WriteLine($"X {registers["X"]}");
-            Assert.IsTrue(registers["A"] == "0");
-            Assert.IsTrue(registers["X"] == "0");
+            Trace.WriteLine($"N {registers["N"]}");
+            Assert.IsTrue(registers["A"] == "255");
+            Assert.IsTrue(registers["X"] == "255");
+            Assert.IsTrue(registers["N"] == "True");
+            
+
         }
 
         [TestMethod("TAY : Implied")]
@@ -54,6 +63,7 @@ namespace _6502_Testing
 
             var program = new byte[]
             {
+
                 0xA9,
                 0x25, // 37 in decimal money,
                 0xA8
@@ -73,16 +83,17 @@ namespace _6502_Testing
 
             var program = new byte[]
             {
-                0xA9,
-                0x25, // 37 in decimal money,
+                0xA0, // LDY #79
+                0x46,
+
                 0x98
             };
             processor.Process(program);
             var registers = processor.Registers();
             Trace.WriteLine($"A {registers["A"]}");
             Trace.WriteLine($"Y {registers["Y"]}");
-            Assert.IsTrue(registers["A"] == "0");
-            Assert.IsTrue(registers["Y"] == "0");
+            Assert.IsTrue(registers["A"] == "70");
+            Assert.IsTrue(registers["Y"] == "70");
         }
     }
 }

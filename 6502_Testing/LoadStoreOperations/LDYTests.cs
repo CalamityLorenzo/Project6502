@@ -1,12 +1,7 @@
 ﻿using Project6502;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace _6502_Testing
+namespace LoadStoreOperations
 {
     [TestClass]
     public class LDY

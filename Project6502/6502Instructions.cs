@@ -108,7 +108,6 @@ namespace Project6502
         {
             YRegister = this.Accumulator;
             CheckNegativeZeroFlags(Accumulator);
-
         }
 
         /// <summary>
@@ -325,65 +324,119 @@ namespace Project6502
 
         #endregion
 
+        #region shifts
+        /// <summary>
+        /// ASL
+        /// </summary>
+        /// <param name="operation"></param>
+        void ASL (byte operation)
+        {
+            var operand = operation switch
+            {
+                0x0A => Accumulator,
+                0x06 => ZeroPage(),
+                0x16 => ZeroPage_X(),
+                0x0E => Absolute(),
+                0x1E => Absolute_X(),
+            };
+            var numToProcess = operation != 0x0A ? memory[operand] : (byte)operand;
+            var val = (byte)(numToProcess << 1);
+
+            _processorStatusFlags[0] = ((numToProcess >> 7) == 1);
+            CheckNegativeZeroFlags(val);
+
+            if (operation != 0x0A)
+            {
+                memory[operand] = val;
+            }
+            else
+            {
+                Accumulator = val;
+            }
+
+        }
+        /// <summary>
+        /// LSR
+        /// </summary>
+        /// <param name="operation"></param>
+        void LSR(byte operation)
+        {
+            var operand = operation switch
+            {
+                0x4A => Accumulator,
+                0x46 => ZeroPage(),
+                0x56 => ZeroPage_X(),
+                0x4E => Absolute(),
+                0x5E => Absolute_X(),
+            };
+            var numToProcess = operation != 0x4A ? memory[operand] : (byte)operand;
+            var val =(byte) (numToProcess >> 1);
+            // Move bit 0 into the carry flag
+            _processorStatusFlags[0] = ((numToProcess & 01) == 1);
+            CheckNegativeZeroFlags(val);
+
+            if (operation != 0x4A)
+            {
+                memory[operand] = val;
+            }
+            else
+            {
+                Accumulator = val;
+            }
+        }
         /// <summary>
         /// ROL
         /// </summary>
         void ROtateLeft(byte operation)
         {
-            var operand = (byte)(operation switch
+            var operand = (operation switch
             {
                 0x2A => Accumulator,
-                0x26 => memory[_programBuffer[_programCounter++]],
-                0x36 => memory[_programBuffer[_programCounter++] + XRegister],
-                0x2E => memory[(_programBuffer[_programCounter++] + _programBuffer[_programCounter++])],
-                0x3E => memory[(_programBuffer[_programCounter++] + _programBuffer[_programCounter++])] + XRegister
+                0x26 => ZeroPage(),
+                0x36 => ZeroPage_X(),
+                0x2E => Absolute(),
+                0x3E => Absolute_X()
             });
-            var value = byte.RotateLeft(operand, 1) + (_processorStatusFlags[0] ? 1 : 0);
-            _processorStatusFlags[0] = (operand >> 7) == 1 ? true : _processorStatusFlags[0];
+            var numToProcess = operation != 0x2A ? memory[operand] : (byte)operand;
+            byte value = (byte)(byte.RotateLeft(numToProcess, 1) + (_processorStatusFlags[0] ? 1 : 0));
+            _processorStatusFlags[0] = ((numToProcess >> 7) == 1);
+            CheckNegativeZeroFlags(value);
+
+            if (operation != 0x2A)
+            {
+                memory[operand] = value;
+            }
+            else
+            {
+                Accumulator = value;
+            }
         }
         /// <summary>
         /// ROR
         /// </summary>
         void ROtateRight(byte operation)
         {
-            var operand = (byte)(operation switch
+            var operand = (operation switch
             {
                 0x6A => Accumulator,
-                0x66 => memory[_programBuffer[_programCounter++]],
-                0x76 => memory[_programBuffer[_programCounter++] + XRegister],
-                0x6E => memory[(_programBuffer[_programCounter++] + _programBuffer[_programCounter++])],
-                0x7E => memory[(_programBuffer[_programCounter++] + _programBuffer[_programCounter++])] + XRegister
+                0x66 => ZeroPage(),
+                0x76 => ZeroPage_X(),
+                0x6E => Absolute(),
+                0x7E => Absolute_X()
             });
-            var value = byte.RotateRight(operand, 1) + (_processorStatusFlags[0] ? 128 : 0);
-            _processorStatusFlags[0] = (byte)(operand & 1) == 1 ? true : _processorStatusFlags[0];
+            var numToProcess = operation != 0x6A ? memory[operand] : (byte)operand;
+            var value = (byte)(byte.RotateRight(numToProcess, 1) + (_processorStatusFlags[0] ? 128 : 0));
+            _processorStatusFlags[0] = ((byte)(numToProcess & 1) == 1);
+            if (operation != 0x6A)
+            {
+                memory[operand] = value;
+            }
+            else
+            {
+                Accumulator = value;
+            }
         }
-
-        #region Address Modes
-         private byte ImmediateConstant() => _programBuffer[_programCounter++];
-
-        private int ZeroPage() => _programBuffer[_programCounter++];
-
-        private int ZeroPage_X() => (_programBuffer[_programCounter++] + XRegister) & 0xFF;
-        private int ZeroPage_Y() => (_programBuffer[_programCounter++] + YRegister) & 0xFF;
-
-        private int Absolute() => _programBuffer.Absolute(_programCounter);
-        private int Absolute_X() => _programBuffer.Absolute(_programCounter) + XRegister;
-        private int Absolute_Y() => _programBuffer.Absolute(_programCounter) + YRegister;
-
-        /// <summary>
-        /// This is a pig but (val),x = val+x.
-        /// msb = mem[val+x+1 &0xFF]
-        /// lsb = mem[val+x & 0xFF]
-        /// The indirect bit is having to query the memory
-        /// </summary>
-        /// <returns></returns>
-        private int Indirect_X() => (memory[((_programBuffer[_programCounter] + XRegister) & 0xFF) + 1] << 8 | memory[((_programBuffer[_programCounter++] + XRegister) & 0xFF)]); // Indexed Indirect x ($,X)
-        private int Indirect_Y() => (memory[_programBuffer[_programCounter] + 1] << 8 | memory[_programBuffer[_programCounter++]]) + YRegister;
-        #endregion
-
-
-
-
+        #endregion shifts
         void Jump()
         {
             var bottom = memory[_programBuffer[_programCounter++]];

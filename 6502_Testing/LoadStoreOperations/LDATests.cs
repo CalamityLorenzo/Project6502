@@ -1,13 +1,13 @@
 using Project6502;
 using System.Diagnostics;
 
-namespace _6502_Testing
+namespace LoadStoreOperations
 {
     [TestClass]
     public class LDA
     {
 
-            
+
         Six502Processor createProcessor() => new Six502Processor(new byte[ushort.MaxValue]);
         Six502Processor createProcessor(byte[] mem) => new Six502Processor(mem);
 
@@ -65,9 +65,8 @@ namespace _6502_Testing
             var program = new byte[]
             {
                 //!-- Preamble
-                0xA9, // LDA #37 (Immediate)
+                0xA2, // LDA #37 (Immediate)
                 0x25,
-                0xAA,  // TAX x = 37
                 //!-- Preamble
                 0xB5,  // LDA $2A,X Load the content of ($2A + $25) 79 into the accumulator
                 0x2A
@@ -170,9 +169,9 @@ namespace _6502_Testing
             var mem = new byte[ushort.MaxValue];
             // this should become $64 $65
             // Thus LDA = 6465
-            mem[(255+16) & 0xFF] = 100;
-            mem[(255+17) & 0xFF] = 101;
-            mem[(0x65 <<8) | 0x64] = 8;
+            mem[255 + 16 & 0xFF] = 100;
+            mem[255 + 17 & 0xFF] = 101;
+            mem[0x65 << 8 | 0x64] = 8;
             var processor = createProcessor(mem);
 
 
@@ -204,8 +203,8 @@ namespace _6502_Testing
             // Thus LDA = 6465
             mem[50] = 255;  // lsb
             mem[51] = 18;  // msb
-             // (18<<8 | 255) + Yreg
-            mem[4863+16] = 71;
+                           // (18<<8 | 255) + Yreg
+            mem[4863 + 16] = 71;
 
             var processor = createProcessor(mem);
 

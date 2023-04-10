@@ -1,7 +1,7 @@
 ﻿using Project6502;
 using System.Diagnostics;
 
-namespace _6502_Testing
+namespace LoadStoreOperations
 {
     [TestClass]
     public class LDX

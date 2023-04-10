@@ -116,6 +116,30 @@ namespace Project6502
 
         void Reset() { }
 
+
+        #region Address Modes
+        private byte ImmediateConstant() => _programBuffer[_programCounter++];
+
+        private int ZeroPage() => _programBuffer[_programCounter++];
+
+        private int ZeroPage_X() => (_programBuffer[_programCounter++] + XRegister) & 0xFF;
+        private int ZeroPage_Y() => (_programBuffer[_programCounter++] + YRegister) & 0xFF;
+
+        private int Absolute() => _programBuffer.Absolute(ref _programCounter);
+        private int Absolute_X() => _programBuffer.Absolute(ref _programCounter) + XRegister;
+        private int Absolute_Y() => _programBuffer.Absolute(ref _programCounter) + YRegister;
+
+        /// <summary>
+        /// This is a pig but (val),x = val+x.
+        /// msb = mem[val+x+1 &0xFF]
+        /// lsb = mem[val+x & 0xFF]
+        /// The indirect bit is having to query the memory
+        /// </summary>
+        /// <returns></returns>
+        private int Indirect_X() => (memory[((_programBuffer[_programCounter] + XRegister) & 0xFF) + 1] << 8 | memory[((_programBuffer[_programCounter++] + XRegister) & 0xFF)]); // Indexed Indirect x ($,X)
+        private int Indirect_Y() => (memory[_programBuffer[_programCounter] + 1] << 8 | memory[_programBuffer[_programCounter++]]) + YRegister;
+        #endregion
+
         // We program is passed in as bytesm and thus already parsed.
         public void Process(byte[] buffer)
         {
@@ -267,6 +291,22 @@ namespace Project6502
                         BIT(instruction);
                         break;
                     #endregion Logical Operations
+
+                    case 0x0A:
+                    case 0x06:
+                    case 0x16:
+                    case 0x0E:
+                    case 0x1E:
+                        ASL(instruction);
+                        break;
+                    case 0x4A:
+                    case 0x46:
+                    case 0x56:
+                    case 0x4E:
+                    case 0x5E:
+                        LSR(instruction);
+                        break;
+
                     case 0x2A: // ROL
                     case 0x26:
                     case 0x36:
@@ -286,7 +326,7 @@ namespace Project6502
                 }
 
                 // 16 bit addressing
-                //_programCounter += 1;
+               // _programCounter += 1;
             }
         }
     }

@@ -1,9 +1,10 @@
 ﻿using Project6502;
 using System.Diagnostics;
 
-namespace _6502_Testing
+namespace LoadStoreOperations
 {
     [TestClass]
+    [TestCategory("Load/Store Operations")]
     public class STY
     {
         Six502Processor createProcessor() => new Six502Processor(new byte[ushort.MaxValue]);
