@@ -114,20 +114,26 @@ namespace Project6502
             }
         }
 
-        void Reset() { }
+        public void Reset()
+        {
+            // Un-used processor flag is always set 
+            _processorStatusFlags[5] = true;
+            // Stack pointer must be at the top
+            _stackPointer = 0xFF;
+        }
 
 
         #region Address Modes
-        private byte ImmediateConstant() => _programBuffer[_programCounter++];
+        private byte ImmediateConstant() => memory[_programCounter++];
 
-        private int ZeroPage() => _programBuffer[_programCounter++];
+        private int ZeroPage() => memory[_programCounter++];
 
-        private int ZeroPage_X() => (_programBuffer[_programCounter++] + XRegister) & 0xFF;
-        private int ZeroPage_Y() => (_programBuffer[_programCounter++] + YRegister) & 0xFF;
+        private int ZeroPage_X() => (memory[_programCounter++] + XRegister) & 0xFF;
+        private int ZeroPage_Y() => (memory[_programCounter++] + YRegister) & 0xFF;
 
-        private int Absolute() => _programBuffer.Absolute(ref _programCounter);
-        private int Absolute_X() => _programBuffer.Absolute(ref _programCounter) + XRegister;
-        private int Absolute_Y() => _programBuffer.Absolute(ref _programCounter) + YRegister;
+        private int Absolute() => memory.Absolute(ref _programCounter);
+        private int Absolute_X() => memory.Absolute(ref _programCounter) + XRegister;
+        private int Absolute_Y() => memory.Absolute(ref _programCounter) + YRegister;
 
         /// <summary>
         /// This is a pig but (val),x = val+x.
@@ -136,22 +142,27 @@ namespace Project6502
         /// The indirect bit is having to query the memory
         /// </summary>
         /// <returns></returns>
-        private int Indirect_X() => (memory[((_programBuffer[_programCounter] + XRegister) & 0xFF) + 1] << 8 | memory[((_programBuffer[_programCounter++] + XRegister) & 0xFF)]); // Indexed Indirect x ($,X)
-        private int Indirect_Y() => (memory[_programBuffer[_programCounter] + 1] << 8 | memory[_programBuffer[_programCounter++]]) + YRegister; // Indirect  + Index Y
-        private int Indirect() => (memory[(_programBuffer[_programCounter] ) << 8 | (_programBuffer[++_programCounter])]); // Straight indirection 16bit address points to lsb where the actul thing is happening.
+        private int Indirect_X() => (memory[((memory[_programCounter] + XRegister) & 0xFF) + 1] << 8 | memory[((memory[_programCounter++] + XRegister) & 0xFF)]); // Indexed Indirect x ($,X)
+        private int Indirect_Y() => (memory[memory[_programCounter] + 1] << 8 | memory[memory[_programCounter++]]) + YRegister; // Indirect  + Index Y
+        private int Indirect() => (memory[(memory[_programCounter]) << 8 | (memory[++_programCounter])]); // Straight indirection 16bit address points to lsb where the actul thing is happening.
         #endregion
 
         // We program is passed in as bytesm and thus already parsed.
-        public void Process(byte[] buffer)
+        public void AdhocProcess(byte[] buffer, ushort startMemory = 0x200)
         {
-            _programCounter = 0; ;
+            _programCounter = startMemory; ;
             _programBuffer = buffer;
-            while (_programCounter < buffer.Length)
+
+            this._programBuffer.CopyTo(memory, startMemory);
+            memory[_programBuffer.Length] = 0x03;
+            while (_programCounter < memory.Length)
             {
                 // do many things.
-                var instruction = buffer[_programCounter++];
+                var instruction = memory[_programCounter++];
                 switch (instruction)
                 {
+                    case 0x03:  // nop and stop
+                        return;
                     case 0x50:
                         BranchIfOverflowClear(); // BVC;
                         break;

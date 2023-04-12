@@ -24,7 +24,7 @@ namespace LoadStoreOperations
                 0x0F
             };
 
-            processor.Process(program);
+            processor.AdhocProcess(program);
             var registers = processor.Registers();
             Trace.WriteLine(registers["A"]);
             Assert.IsTrue(registers["A"] == "15");
@@ -46,7 +46,7 @@ namespace LoadStoreOperations
                 0x25
             };
 
-            processor.Process(program);
+            processor.AdhocProcess(program);
             var registers = processor.Registers();
             Trace.WriteLine(registers["A"]);
             Assert.IsTrue(registers["A"] == "100");
@@ -72,7 +72,7 @@ namespace LoadStoreOperations
                 0x2A
             };
 
-            processor.Process(program);
+            processor.AdhocProcess(program);
             var registers = processor.Registers();
             Trace.WriteLine($"A  {registers["A"]}");
             Trace.WriteLine($"X  {registers["X"]}");
@@ -96,7 +96,7 @@ namespace LoadStoreOperations
                 0x01
             };
 
-            processor.Process(program);
+            processor.AdhocProcess(program);
             var registers = processor.Registers();
             Trace.WriteLine(registers["A"]);
             Assert.IsTrue(registers["A"] == "100");
@@ -124,7 +124,7 @@ namespace LoadStoreOperations
                 0x01
             };
 
-            processor.Process(program);
+            processor.AdhocProcess(program);
             var registers = processor.Registers();
             Trace.WriteLine(registers["A"]);
             Trace.WriteLine(registers["X"]);
@@ -154,7 +154,7 @@ namespace LoadStoreOperations
                 0x01
             };
 
-            processor.Process(program);
+            processor.AdhocProcess(program);
             var registers = processor.Registers();
             Trace.WriteLine(registers["A"]);
             Trace.WriteLine(registers["Y"]);
@@ -186,7 +186,7 @@ namespace LoadStoreOperations
                 0xFF   // 255
             };
 
-            processor.Process(program);
+            processor.AdhocProcess(program);
             var registers = processor.Registers();
             Trace.WriteLine(registers["A"]);
             Trace.WriteLine(registers["X"]);
@@ -220,7 +220,7 @@ namespace LoadStoreOperations
                 0x32   // 255
             };
 
-            processor.Process(program);
+            processor.AdhocProcess(program);
             var registers = processor.Registers();
             Trace.WriteLine(registers["A"]);
             Trace.WriteLine(registers["Y"]);

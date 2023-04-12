@@ -18,7 +18,7 @@ namespace StackOperations
             {
                 0x9A
             };
-            processor.Process(program);
+            processor.AdhocProcess(program);
             var r2 = processor.Registers();
             Trace.WriteLine($"X (orig) {r1["X"]}");
             Trace.WriteLine($"X (current) {r2["X"]}");
@@ -40,7 +40,7 @@ namespace StackOperations
                 0x1F,
                 0xBA // TXS
             };
-            processor.Process(program);
+            processor.AdhocProcess(program);
 
             var r2 = processor.Registers();
             Trace.WriteLine($"X {r2["X"]}");
@@ -63,25 +63,26 @@ namespace StackOperations
                 0x48 // PHA
             };
 
-            processor.Process(program);
+            processor.AdhocProcess(program);
             var r = processor.Registers();
-            Trace.WriteLine($"A {r["A"]}");
-            Trace.WriteLine($"SP {r["SP"]}");
-            Trace.WriteLine($"mem[{0x01FF}] {mem[0x01FF]}");
+            Trace.WriteLine($"A = {r["A"]}");
+            Trace.WriteLine($"SP = {r["SP"]}");
+            Trace.WriteLine($"mem[{0x01FF}] = {mem[0x01FF]}");
 
             Assert.IsTrue(r["A"] == "15");
             Assert.IsTrue(r["SP"] == "254");
             Assert.IsTrue(mem[511] == 15);
-            processor.Process(program);
+            processor.AdhocProcess(program);
         }
 
         [TestMethod("PLA")]
+        // Pulls an 8 bit value from the stack and into the accumulator. The zero and negative flags are set as appropriate.
         public void PLA()
         {
             var mem = new byte[ushort.MaxValue];
             // Top of stack, 
             // going to acc
-            mem[0x01FE] = 129;
+            mem[0x01FF] = 129;
             Six502Processor processor = createProcessor(mem);
             var program = new byte[]
             {
@@ -93,7 +94,7 @@ namespace StackOperations
                 0x68
             };
 
-            processor.Process(program);
+            processor.AdhocProcess(program);
             var r = processor.Registers();
             Trace.WriteLine($"A {r["A"]}");
             Trace.WriteLine($"SP {r["SP"]}");
@@ -103,8 +104,8 @@ namespace StackOperations
             Assert.IsTrue(r["A"] == "129");
             Assert.IsTrue(r["SP"] == "255");
             Assert.IsTrue(r["N"] == "True"); // FUCKING VB!!
-            Assert.IsTrue(mem[510] == 129);
-            processor.Process(program);
+            Assert.IsTrue(mem[511] == 129);
+            processor.AdhocProcess(program);
 
         }
 
@@ -123,7 +124,7 @@ namespace StackOperations
               
                 0x08
             };
-            processor.Process(program);
+            processor.AdhocProcess(program);
             var r = processor.Registers();
             Trace.WriteLine($"N {r["N"]}");
             Trace.WriteLine($"mem[{0x01FE}] == {mem[0x01FE]}");
@@ -142,7 +143,7 @@ namespace StackOperations
             {
                 0x28
             };
-            processor.Process(program);
+            processor.AdhocProcess(program);
             var r = processor.Registers();
             Trace.WriteLine($"N {r["N"]}");
             Trace.WriteLine($"Z {r["Z"]}");

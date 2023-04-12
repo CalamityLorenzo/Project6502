@@ -21,7 +21,7 @@ namespace RegisterTransfers
                 0x25, // 37 in decimal money,
                 0xAA
             };
-            processor.Process(program);
+            processor.AdhocProcess(program);
             var registers = processor.Registers();
             Trace.WriteLine($"A {registers["A"]}");
             Trace.WriteLine($"X {registers["X"]}");
@@ -44,7 +44,7 @@ namespace RegisterTransfers
                 
                 0x8A
             };
-            processor.Process(program);
+            processor.AdhocProcess(program);
             var registers = processor.Registers();
             Trace.WriteLine($"A {registers["A"]}");
             Trace.WriteLine($"X {registers["X"]}");
@@ -68,7 +68,7 @@ namespace RegisterTransfers
                 0x25, // 37 in decimal money,
                 0xA8
             };
-            processor.Process(program);
+            processor.AdhocProcess(program);
             var registers = processor.Registers();
             Trace.WriteLine($"A {registers["A"]}");
             Trace.WriteLine($"Y {registers["Y"]}");
@@ -88,7 +88,7 @@ namespace RegisterTransfers
 
                 0x98
             };
-            processor.Process(program);
+            processor.AdhocProcess(program);
             var registers = processor.Registers();
             Trace.WriteLine($"A {registers["A"]}");
             Trace.WriteLine($"Y {registers["Y"]}");

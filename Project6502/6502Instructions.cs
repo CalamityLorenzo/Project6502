@@ -7,7 +7,7 @@ namespace Project6502
         // BOX
         void BranchIfOverflowClear()
         {
-            var offSet = (sbyte)_programBuffer[_programCounter++];
+            var offSet = (sbyte)memory[_programCounter++];
             this._programCounter = ((ushort)(_programCounter + offSet));
         }
 
@@ -68,10 +68,11 @@ namespace Project6502
         }
         /// <summary>
         /// PLA
+        /// Pulls an 8 bit value from the stack and into the accumulator. The zero and negative flags are set as appropriate.
         /// </summary>
         void PulLAccumulator()
         {
-            Accumulator = memory[(0x01 << 8 | _stackPointer++)];
+            Accumulator = memory[(0x01 << 8 | ++_stackPointer)];
             CheckNegativeZeroFlags(Accumulator);
         }
         /// <summary>
@@ -147,7 +148,7 @@ namespace Project6502
                 0xB9 => memory[Absolute_Y()],
                 0xA1 => memory[Indirect_X()],
                 0xB1 => memory[Indirect_Y()],
-                _ => throw new NotImplementedException($"{operation.ToString()} : {Convert.ToString(operation, toBase:16)}"),
+                _ => throw new NotImplementedException($"{operation.ToString()} : {Convert.ToString(operation, toBase: 16)}"),
             };
             Accumulator = operand;
             CheckNegativeZeroFlags(Accumulator);
@@ -197,7 +198,7 @@ namespace Project6502
             // Gets the memory address that we are poking with our value
             var operand = operation switch
             {
-                0x85 => ImmediateConstant(),
+                0x85 => ZeroPage(),
                 0x95 => ZeroPage_X(),
                 0x8D => Absolute(),
                 0x9D => Absolute_X(),
@@ -318,7 +319,7 @@ namespace Project6502
             if ((Accumulator & memVal) == 0)
                 _processorStatusFlags[1] = true;
             // Bits 6 and 7 are copied to Verlfow and Negative flag.
-            _processorStatusFlags[6] = (memVal & 0x40) == 0; 
+            _processorStatusFlags[6] = (memVal & 0x40) == 0;
             _processorStatusFlags[7] = (memVal & 0x80) == 0;
         }
 
@@ -329,7 +330,7 @@ namespace Project6502
         /// ASL
         /// </summary>
         /// <param name="operation"></param>
-        void ASL (byte operation)
+        void ASL(byte operation)
         {
             var operand = operation switch
             {
@@ -370,7 +371,7 @@ namespace Project6502
                 0x5E => Absolute_X(),
             };
             var numToProcess = operation != 0x4A ? memory[operand] : (byte)operand;
-            var val =(byte) (numToProcess >> 1);
+            var val = (byte)(numToProcess >> 1);
             // Move bit 0 into the carry flag
             _processorStatusFlags[0] = ((numToProcess & 01) == 1);
             CheckNegativeZeroFlags(val);
@@ -437,31 +438,43 @@ namespace Project6502
             }
         }
         #endregion shifts
+        /// <summary>
+        /// JMP
+        /// </summary>
+        /// <param name="operation"></param>
         void Jump(byte operation)
         {
             var operand = operation switch
             {
                 0x4C => Absolute(),
                 0x6C => Indirect()
-            }; 
+            };
             _programCounter = (ushort)operand;
         }
 
+        /// <summary>
+        /// JSR
+        /// </summary>
         void JumptoSubRoutine()
         {
-            var operand  = Absolute();
-            // Skip the operands for the command.
-            _programCounter++;
-            _programCounter++; 
-            // Set ther return address
-            memory[_stackPointer++] = (byte)(_programCounter >> 8);
-            memory[_stackPointer++] = (byte)(_programCounter & 0xFF);
+            var operand = Absolute();
+            // Set ther return address1
+            // msb
+            memory[(0x01 << 8 | _stackPointer--)] = (byte)(operand >> 8);
+            // lsb 
+            memory[(0x01 << 8 | _stackPointer--)] = (byte)(operand & 0xFF);
+            // Skip the operands for the comwmand.
+            //_programCounter++;
+            //_programCounter++;
             _programCounter = (ushort)operand;
         }
 
+        // RTS
         void ReturnfromSubroutine()
         {
-            var newProgramCounter = (memory[_stackPointer--] <<8 ) | memory[_stackPointer--];
+            var lsb = memory[_stackPointer--];
+            var msb = memory[_stackPointer--];
+            var newProgramCounter = (msb << 8 | lsb);
             _programCounter = (ushort)newProgramCounter;
         }
 

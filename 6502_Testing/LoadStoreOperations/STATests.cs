@@ -14,7 +14,7 @@ namespace LoadStoreOperations
         public void STA_ZeroPage()
         {
 
-            var memory = new byte[byte.MaxValue];
+            var memory = new byte[ushort.MaxValue];
             memory[162] = 100;
 
             var processor = createProcessor(memory);
@@ -27,7 +27,7 @@ namespace LoadStoreOperations
                 0xA2,
             };
 
-            processor.Process(program);
+            processor.AdhocProcess(program);
 
             var registers = processor.Registers();
 
@@ -57,7 +57,7 @@ namespace LoadStoreOperations
                 0xA2,
             };
 
-            processor.Process(program);
+            processor.AdhocProcess(program);
 
             var registers = processor.Registers();
 
@@ -83,7 +83,7 @@ namespace LoadStoreOperations
                 0x40
             };
 
-            processor.Process(program);
+            processor.AdhocProcess(program);
 
             var registers = processor.Registers();
 
@@ -115,7 +115,7 @@ namespace LoadStoreOperations
                 0x40
             };
 
-            processor.Process(program);
+            processor.AdhocProcess(program);
 
             var registers = processor.Registers();
 
@@ -146,7 +146,7 @@ namespace LoadStoreOperations
                 0x40
             };
 
-            processor.Process(program);
+            processor.AdhocProcess(program);
 
             var registers = processor.Registers();
 
@@ -180,7 +180,7 @@ namespace LoadStoreOperations
                 0xA2, // Remeber A full 16bit address = 0xA240 (Not 0xA2 + 0x40)
             };
 
-            processor.Process(program);
+            processor.AdhocProcess(program);
 
             var registers = processor.Registers();
 
@@ -221,7 +221,7 @@ namespace LoadStoreOperations
                 0xA2, 
             };
 
-            processor.Process(program);
+            processor.AdhocProcess(program);
 
             var registers = processor.Registers();
 
