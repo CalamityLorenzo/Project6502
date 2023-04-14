@@ -1,4 +1,5 @@
-﻿using System.Xml.Serialization;
+﻿using Microsoft.VisualBasic;
+using System.Xml.Serialization;
 
 namespace Project6502
 {
@@ -72,7 +73,7 @@ namespace Project6502
         /// </summary>
         void PulLAccumulator()
         {
-            Accumulator = memory[(0x01 << 8 | ++_stackPointer)];
+            Accumulator = memory[(0x01 << 8 | _stackPointer++)];
             CheckNegativeZeroFlags(Accumulator);
         }
         /// <summary>
@@ -147,7 +148,7 @@ namespace Project6502
                 0xBD => memory[Absolute_X()],
                 0xB9 => memory[Absolute_Y()],
                 0xA1 => memory[Indirect_X()],
-                0xB1 => memory[Indirect_Y()],
+                0xB1 => memory[Indexed_Y()],
                 _ => throw new NotImplementedException($"{operation.ToString()} : {Convert.ToString(operation, toBase: 16)}"),
             };
             Accumulator = operand;
@@ -204,7 +205,7 @@ namespace Project6502
                 0x9D => Absolute_X(),
                 0x99 => Absolute_Y(),
                 0x81 => Indirect_X(),
-                0x91 => Indirect_Y(),
+                0x91 => Indexed_Y(),
             };
 
             memory[operand] = Accumulator;
@@ -254,7 +255,7 @@ namespace Project6502
                 0x3D => memory[Absolute_X()],
                 0x39 => memory[Absolute_Y()],
                 0x21 => memory[Indirect_X()],
-                0x31 => memory[Indirect_Y()],
+                0x31 => memory[Indexed_Y()],
             };
             var val = Accumulator & operand;
             Accumulator = (byte)val;
@@ -276,7 +277,7 @@ namespace Project6502
                 0x5D => memory[Absolute_X()],
                 0x59 => memory[Absolute_Y()],
                 0x41 => memory[Indirect_X()],
-                0x51 => memory[Indirect_Y()],
+                0x51 => memory[Indexed_Y()],
             };
             var val = Accumulator ^ operand;
             Accumulator = (byte)val;
@@ -297,7 +298,7 @@ namespace Project6502
                 0x1D => memory[Absolute_X()],
                 0x19 => memory[Absolute_Y()],
                 0x01 => memory[Indirect_X()],
-                0x11 => memory[Indirect_Y()],
+                0x11 => memory[Indexed_Y()],
             };
             var val = Accumulator | operand;
             Accumulator = (byte)val;
@@ -324,6 +325,36 @@ namespace Project6502
         }
 
         #endregion
+
+        #region System
+        /// <summary>
+        /// NOP
+        /// No Operation
+        /// </summary>
+        void NoOperation()
+        {
+            ;
+        }
+
+        /// <summary>
+        /// BRK
+        /// </summary>
+        void Break()
+        {
+            this._processorStatusFlags[6] = true;
+        }
+
+        /// <summary>
+        /// RTI
+        /// Return From Interrupt
+        /// </summary>
+        void ReturnFromInterrupt()
+        {
+            var _processorFlags = memory[(0x01 << 8 | _stackPointer++)];
+            ConvertToProcessorStatus(_processorFlags);
+        }
+
+        #endregion System
 
         #region shifts
         /// <summary>
@@ -399,6 +430,7 @@ namespace Project6502
                 0x3E => Absolute_X()
             });
             var numToProcess = operation != 0x2A ? memory[operand] : (byte)operand;
+            // Rotate Left , and add the carry to the
             byte value = (byte)(byte.RotateLeft(numToProcess, 1) + (_processorStatusFlags[0] ? 1 : 0));
             _processorStatusFlags[0] = ((numToProcess >> 7) == 1);
             CheckNegativeZeroFlags(value);
@@ -438,6 +470,65 @@ namespace Project6502
             }
         }
         #endregion shifts
+
+        #region Arithimetic
+        /// <summary>
+        /// ADC
+        /// Add with Carry
+        /// </summary>
+        void ADwithCarry(byte operation)
+        {
+            var operand = operation switch
+            {
+                0x69 => ImmediateConstant(),
+                0x65 => memory[ZeroPage()],
+                0x75 => memory[ZeroPage_X()],
+                0x6D => memory[Absolute()],
+                0x7D => memory[Absolute_X()],
+                0x79 => memory[Absolute_Y()],
+                0x61 => memory[Indirect_X()],
+                0x71 => memory[Indexed_Y()],
+            };
+            // Do the addition (we don't know here if there has been overflow
+            var add = Accumulator + operand + (_processorStatusFlags[0] ? 1 : 0);
+            // Ensure we are only grabbing the first 8 bits
+            Accumulator = (byte)(add & 0xFF);
+            // Did a carry occur?
+            _processorStatusFlags[0] = (add != (add & 0xFF));
+            CheckNegativeZeroFlags(Accumulator);
+
+        }
+        /// <summary>
+        /// SBC
+        /// Add with Carry
+        /// </summary>
+        void SuBtractwithCarry(byte operation)
+        {
+            var operand = operation switch
+            {
+                0xE9 => ImmediateConstant(),
+                0xE5 => memory[ZeroPage()],
+                0xF5 => memory[ZeroPage_X()],
+                0xED => memory[Absolute()],
+                0xFD => memory[Absolute_X()],
+                0xF9 => memory[Absolute_Y()],
+                0xE1 => memory[Indirect_X()],
+                0xF1 => memory[Indexed_Y()],
+            };
+            // Do the addition (we don't know here if there has been overflow
+            var add = Accumulator + operand + (_processorStatusFlags[0] ? 1 : 0);
+            
+            // Ensure we are only grabbing the first 8 bits
+            Accumulator = (byte)(add & 0xFF);
+            // Did a carry occur?
+            _processorStatusFlags[0] = (add != (add & 0xFF));
+
+            var overlflow = (Accumulator ^ add) & (operand ^ add) & 0x80;
+            CheckNegativeZeroFlags(Accumulator);
+
+        }
+        #endregion
+
         /// <summary>
         /// JMP
         /// </summary>
@@ -463,20 +554,21 @@ namespace Project6502
             memory[(0x01 << 8 | _stackPointer--)] = (byte)(operand >> 8);
             // lsb 
             memory[(0x01 << 8 | _stackPointer--)] = (byte)(operand & 0xFF);
-            // Skip the operands for the comwmand.
-            //_programCounter++;
-            //_programCounter++;
+
             _programCounter = (ushort)operand;
         }
 
         // RTS
         void ReturnfromSubroutine()
         {
-            var lsb = memory[_stackPointer--];
-            var msb = memory[_stackPointer--];
+            var lsb = memory[(0x01 << 8 | _stackPointer++)];
+            var msb = memory[(0x01 << 8 | _stackPointer++)];
             var newProgramCounter = (msb << 8 | lsb);
             _programCounter = (ushort)newProgramCounter;
         }
 
+
     }
+
+
 }

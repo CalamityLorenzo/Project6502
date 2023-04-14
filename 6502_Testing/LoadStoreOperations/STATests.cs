@@ -79,8 +79,8 @@ namespace LoadStoreOperations
                 0xC8,
 
                 0x8D, // STA 
+                0x40,
                 0xA2, // Remeber A full 16bit address = 0xA240 (Not 0xA2 + 0x40)
-                0x40
             };
 
             processor.AdhocProcess(program);
@@ -111,8 +111,8 @@ namespace LoadStoreOperations
                 0xC8,
 
                 0x9D, // STA (mem),X = ($A2,$40), $40
+                0x40,
                 0xA2, // Remeber A full 16bit address = 0xA240 (Not 0xA2 + 0x40)
-                0x40
             };
 
             processor.AdhocProcess(program);
@@ -142,8 +142,8 @@ namespace LoadStoreOperations
                 0xC8,
 
                 0x99, // STA (mem),X = ($A2,$40), $40
+                0x40,
                 0xA2, // Remeber A full 16bit address = 0xA240 (Not 0xA2 + 0x40)
-                0x40
             };
 
             processor.AdhocProcess(program);

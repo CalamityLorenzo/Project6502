@@ -91,13 +91,13 @@ namespace LoadStoreOperations
             var program = new byte[]
             {
                 0xAE,
+                0x01,
                 0xFF,
-                0x01
             };
 
             processor.AdhocProcess(program);
             var registers = processor.Registers();
-            Trace.WriteLine(registers["X"]);
+            Trace.WriteLine($"X = {registers["X"]}");
             Assert.IsTrue(registers["X"] == "100");
         }
 
@@ -120,8 +120,8 @@ namespace LoadStoreOperations
                 0xA8,  // TAY x = 16
 
                 0xBE,
+                0x01,
                 0xFF,
-                0x01
             };
 
             processor.AdhocProcess(program);

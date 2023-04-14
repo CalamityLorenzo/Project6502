@@ -15,25 +15,25 @@ namespace Jumps_Calls
             var mem = new byte[ushort.MaxValue];
             var processor = createProcessor(mem);
 
+            var p = new byte[32880];
             var program = new byte[]{
                 0x20,  // JSR 80 6A (32874)
-                0x80,
-                0x6A
+                0x6A,
+                0x82,
             };
 
-            var p = new byte[32880];
             program.CopyTo(p, 0);
 
-            var by = new byte[]
+            var program2= new byte[]
             {
                 0x68,    // PLA
                 0xAA,   // TAX
                 0x68,   // PLA  
                 0xA8,   // TAY
-
-                // 0x60    //  JSR
+                0x60    //  JSR
             };
-            by.CopyTo(p, 32874);
+
+            program2.CopyTo(p, 32874);
             processor.Reset();
             processor.AdhocProcess(p);
             var r = processor.Registers();
@@ -43,10 +43,10 @@ namespace Jumps_Calls
             Trace.WriteLine($"PC = {r["PC"]}");
 
             // MSB
-            Assert.IsTrue(r["Y"] == "128");
-            // LSB
             Assert.IsTrue(r["X"] == "106");
-            Assert.IsTrue(r["PC"] == "32881");
+            // LSB
+            Assert.IsTrue(r["Y"] == "130");
+            Assert.IsTrue(r["PC"] == "1");
 
             processor.AdhocProcess(program);
         }

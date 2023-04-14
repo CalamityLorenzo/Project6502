@@ -104,10 +104,10 @@ namespace Logical
                 //0x0E,
 
                 0x2D,
-                0x02, // 200 + 15
                 0x00,
+                0x02, // 512
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProcess(program, 0x500);
 
             var registers = processor.Registers();
             Trace.WriteLine($"A = {registers["A"]}");
@@ -137,8 +137,8 @@ namespace Logical
                 0x0E,
 
                 0x3D,
-                0x02, // 200 + 15
                 0x00,
+                0x02, // 200 + 15
             };
             processor.AdhocProcess(program);
 
@@ -170,8 +170,8 @@ namespace Logical
                 0x0E,
 
                 0x39,
-                0x02, // 200 + 15
                 0x00,
+                0x02, // 200 + 15
             };
             processor.AdhocProcess(program);
 

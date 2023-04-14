@@ -106,8 +106,8 @@ namespace Shifts
             var program = new byte[]
             {
                 0x2E,
+                0xFE,
                 0x16,
-                0xFE
             };
             processor.AdhocProcess(program);
 
@@ -130,7 +130,7 @@ namespace Shifts
         {
             var mem = new byte[ushort.MaxValue];
 
-            mem[(0x16 << 8 | 0xFE) + 1] = 18;
+            mem[5886 + 1] = 18;
             Six502Processor processor = createProcessor(mem);
 
             var program = new byte[]
@@ -139,13 +139,16 @@ namespace Shifts
                 0x01,
 
                 0x3E,
+                0xFE, // 0x16FE
                 0x16,
-                0xFE
+
+                0x03
             };
             processor.AdhocProcess(program);
 
             var registers = processor.Registers();
             Trace.WriteLine($"A = {registers["A"]}");
+            Trace.WriteLine($"X = {registers["X"]}");
             Trace.WriteLine($"N = {registers["N"]}");
             Trace.WriteLine($"Z = {registers["Z"]}");
             Trace.WriteLine($"C = {registers["C"]}");

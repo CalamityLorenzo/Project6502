@@ -106,8 +106,8 @@ namespace Shifts
             var program = new byte[]
             {
                 0x6E,
+                0xFE,
                 0x16,
-                0xFE
             };
             processor.AdhocProcess(program);
 
@@ -139,8 +139,8 @@ namespace Shifts
                 0x01,
 
                 0x7E,
+                0xFE,
                 0x16,
-                0xFE
             };
             processor.AdhocProcess(program);
 

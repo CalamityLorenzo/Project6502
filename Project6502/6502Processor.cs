@@ -143,7 +143,7 @@ namespace Project6502
         /// </summary>
         /// <returns></returns>
         private int Indirect_X() => (memory[((memory[_programCounter] + XRegister) & 0xFF) + 1] << 8 | memory[((memory[_programCounter++] + XRegister) & 0xFF)]); // Indexed Indirect x ($,X)
-        private int Indirect_Y() => (memory[memory[_programCounter] + 1] << 8 | memory[memory[_programCounter++]]) + YRegister; // Indirect  + Index Y
+        private int Indexed_Y() => (memory[memory[_programCounter] + 1] << 8 | memory[memory[_programCounter++]]) + YRegister; // Indirect  + Index Y
         private int Indirect() => (memory[(memory[_programCounter]) << 8 | (memory[++_programCounter])]); // Straight indirection 16bit address points to lsb where the actul thing is happening.
         #endregion
 
@@ -154,14 +154,15 @@ namespace Project6502
             _programBuffer = buffer;
 
             this._programBuffer.CopyTo(memory, startMemory);
-            memory[_programBuffer.Length] = 0x03;
+            // That should stop 'em
+            memory[0] = 0x03;
             while (_programCounter < memory.Length)
             {
                 // do many things.
                 var instruction = memory[_programCounter++];
                 switch (instruction)
                 {
-                    case 0x03:  // nop and stop
+                    case 0x03:  // astop
                         return;
                     case 0x50:
                         BranchIfOverflowClear(); // BVC;
@@ -345,7 +346,32 @@ namespace Project6502
                     case 0x60: // RTS
                         ReturnfromSubroutine();
                         break;
-                        #endregion Jumps and Calls
+                    #endregion Jumps and Calls
+
+                    #region Arithmetic
+                    case 0x69:
+                    case 0x65:
+                    case 0x75:
+                    case 0x6D:
+                    case 0x7D:
+                    case 0x79:
+                    case 0x61:
+                    case 0x71:
+                        ADwithCarry(instruction);
+                        break;
+
+                    #endregion
+                    #region System
+                    case 0xEA:
+                        NoOperation();
+                        break;
+                    case 0x00:
+                        Break();
+                    break;
+                    case 0x40:
+                        ReturnFromInterrupt();
+                        break;
+                        #endregion
                 }
 
                 // 16 bit addressing

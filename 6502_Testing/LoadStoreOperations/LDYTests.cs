@@ -92,8 +92,8 @@ namespace LoadStoreOperations
             var program = new byte[]
             {
                 0xAC,
+                0x01,
                 0xFF,
-                0x01
             };
 
             processor.AdhocProcess(program);
@@ -120,8 +120,8 @@ namespace LoadStoreOperations
                 0xAA,  // TAX x = 16
 
                 0xBC,
+                0x01,
                 0xFF,
-                0x01
             };
 
             processor.AdhocProcess(program);

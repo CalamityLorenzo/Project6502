@@ -87,8 +87,8 @@ namespace LoadStoreOperations
                 0xA8, // TAX
 
                 0x8C, // STY
+                0xFF,
                 0x25,
-                0xFF
             };
 
             processor.AdhocProcess(program);
