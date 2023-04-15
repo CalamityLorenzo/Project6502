@@ -4,22 +4,22 @@ using System.Diagnostics;
 namespace Arithmetic
 {
     [TestClass]
-    public class ADC
+    public class SBC
     {
         Six502Processor createProcessor() => new Six502Processor(new byte[ushort.MaxValue]);
         Six502Processor createProcessor(byte[] mem) => new Six502Processor(mem);
 
-        [TestMethod("ADC : Immediate")]
-        public void ADC_Immediate()
+        [TestMethod("SBC : Immediate")]
+        public void SBC_Immediate()
         {
             var mem = new byte[ushort.MaxValue];
             var processor = createProcessor(mem);
-            
+
             var program = new byte[]{
-                0xA9,  // LDA #245
-                0xF5,
-                
-                0x69,
+                0xA9,  // LDA #121
+                0x79,
+
+                0xE9,
                 0x12  // Val not memory location
             };
             processor.AdhocProcess(program);
@@ -29,14 +29,14 @@ namespace Arithmetic
             Trace.WriteLine($"N = {registers["N"]}");
             Trace.WriteLine($"C = {registers["C"]}");
 
-            Assert.IsTrue(registers["A"] == "7");
+            Assert.IsTrue(registers["A"] == "103");
             Assert.IsTrue(registers["N"] == "False");
-            Assert.IsTrue(registers["C"] == "True");
+            Assert.IsTrue(registers["C"] == "False");
 
         }
 
-        [TestMethod("ADC : Zero Page")]
-        public void ADC_ZeroPage()
+        [TestMethod("SBC : Zero Page")]
+        public void SBC_ZeroPage()
         {
             var mem = new byte[ushort.MaxValue];
             mem[22] = 250;
@@ -46,7 +46,7 @@ namespace Arithmetic
                 0xA9,  // LDA #245
                 0x11,
 
-                0x65,
+                0xe5,
                 0x16  //  memory location
             };
             processor.AdhocProcess(program);
@@ -65,11 +65,11 @@ namespace Arithmetic
         }
 
 
-        [TestMethod("ADC : Zero Page.X")]
-        public void ADC_ZeroPage_X()
+        [TestMethod("SBC : Zero Page.X")]
+        public void SBC_ZeroPage_X()
         {
             var mem = new byte[ushort.MaxValue];
-            mem[22+9] = 80;
+            mem[22 + 9] = 80;
             var processor = createProcessor(mem);
 
             var program = new byte[]{
@@ -79,8 +79,8 @@ namespace Arithmetic
                 0xA2, // LDX #09
                 0x09,
 
-                0x75, 
-                0x16  
+                0xF5,
+                0x16
             };
             processor.AdhocProcess(program);
 
@@ -97,8 +97,8 @@ namespace Arithmetic
 
         }
 
-        [TestMethod("ADC : Absolute")]
-        public void ADC_Absolute()
+        [TestMethod("SBC : Absolute")]
+        public void SBC_Absolute()
         {
             var mem = new byte[ushort.MaxValue];
             mem[8726] = 80;
@@ -111,7 +111,7 @@ namespace Arithmetic
                 0xA2, // LDX #09
                 0x09,
 
-                0x6D,
+                0xED,
                 0x16,
                 0x22
             };
@@ -130,11 +130,11 @@ namespace Arithmetic
 
         }
 
-        [TestMethod("ADC : Absolute.X")]
-        public void ADC_Absolute_X()
+        [TestMethod("SBC : Absolute.X")]
+        public void SBC_Absolute_X()
         {
             var mem = new byte[ushort.MaxValue];
-            mem[8726+9] = 80;
+            mem[8726 + 9] = 80;
             var processor = createProcessor(mem);
 
             var program = new byte[]{
@@ -144,7 +144,7 @@ namespace Arithmetic
                 0xA2, // LDX #09
                 0x09,
 
-                0x7D,
+                0xFD,
                 0x16,
                 0x22
             };
@@ -161,9 +161,9 @@ namespace Arithmetic
             Assert.IsTrue(registers["N"] == "False");
             Assert.IsTrue(registers["C"] == "True");
 
-     }
-        [TestMethod("ADC : Absolute.Y")]
-        public void ADC_Absolute_Y()
+        }
+        [TestMethod("SBC : Absolute.Y")]
+        public void SBC_Absolute_Y()
         {
             var mem = new byte[ushort.MaxValue];
             mem[8726 + 9] = 80;
@@ -176,7 +176,7 @@ namespace Arithmetic
                 0xA0, // LDY #09
                 0x09,
 
-                0x79,
+                0xF9,
                 0x16,
                 0x22
             };

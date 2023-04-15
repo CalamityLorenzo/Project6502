@@ -123,7 +123,7 @@ namespace Shifts
             Assert.IsTrue(registers["A"] == "0");
             Assert.IsTrue(registers["N"] == "False");
             Assert.IsTrue(registers["Z"] == "False");
-            Assert.IsTrue(registers["C"] == "True");
+            Assert.IsTrue(registers["C"] == "False");
             Assert.IsTrue(mem[5886] == 64);
         }
 

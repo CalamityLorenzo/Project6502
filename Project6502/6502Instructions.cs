@@ -65,7 +65,8 @@ namespace Project6502
         /// </summary>
         void PusHAccumulator()
         {
-            memory[(0x01 << 8 | _stackPointer--)] = Accumulator;
+            var pos = (0x01 << 8 | _stackPointer--);
+            memory[pos] = Accumulator;
         }
         /// <summary>
         /// PLA
@@ -73,7 +74,8 @@ namespace Project6502
         /// </summary>
         void PulLAccumulator()
         {
-            Accumulator = memory[(0x01 << 8 | _stackPointer++)];
+            var pos = (0x01 << 8 | ++ _stackPointer);
+            Accumulator = memory[pos];
             CheckNegativeZeroFlags(Accumulator);
         }
         /// <summary>
@@ -84,10 +86,13 @@ namespace Project6502
             byte val = ConvertFromProcessorStatus();
             memory[(0x01 << 8 | _stackPointer--)] = val;
         }
-
+        /// <summary>
+        /// PLP
+        /// Pull Proicessor status
+        /// </summary>
         void PulLProcessorstatus()
         {
-            var val = memory[(0x01 << 8 | _stackPointer++)];
+            var val = memory[(0x01 << 8 | ++ _stackPointer)];
             ConvertToProcessorStatus(val);
         }
         #endregion
@@ -350,7 +355,7 @@ namespace Project6502
         /// </summary>
         void ReturnFromInterrupt()
         {
-            var _processorFlags = memory[(0x01 << 8 | _stackPointer++)];
+            var _processorFlags = memory[(0x01 << 8 | ++_stackPointer)];
             ConvertToProcessorStatus(_processorFlags);
         }
 
@@ -490,11 +495,16 @@ namespace Project6502
                 0x71 => memory[Indexed_Y()],
             };
             // Do the addition (we don't know here if there has been overflow
-            var add = Accumulator + operand + (_processorStatusFlags[0] ? 1 : 0);
+            var sum = Accumulator + operand + (_processorStatusFlags[0] ? 1 : 0);
             // Ensure we are only grabbing the first 8 bits
-            Accumulator = (byte)(add & 0xFF);
+            var result = (byte)(sum & 0xFF);
+            // Did an overflow occur (+/- 128)
+            _processorStatusFlags[6] = (sum > 127 || sum < -128);
+            var t = ((int)Accumulator ^ sum) & ((int)operand ^ sum) & 0x80;
+            var b = ((int)Accumulator ^ (byte)sum) & ((int)operand ^ (byte)sum) & 0x80;
             // Did a carry occur?
-            _processorStatusFlags[0] = (add != (add & 0xFF));
+            _processorStatusFlags[0] = (sum != (sum & 0xFF));
+            Accumulator = result;
             CheckNegativeZeroFlags(Accumulator);
 
         }
@@ -516,14 +526,16 @@ namespace Project6502
                 0xF1 => memory[Indexed_Y()],
             };
             // Do the addition (we don't know here if there has been overflow
-            var add = Accumulator + operand + (_processorStatusFlags[0] ? 1 : 0);
-            
-            // Ensure we are only grabbing the first 8 bits
-            Accumulator = (byte)(add & 0xFF);
-            // Did a carry occur?
-            _processorStatusFlags[0] = (add != (add & 0xFF));
+            var sum = Accumulator - operand - (_processorStatusFlags[0] ? 1 : 0);
 
-            var overlflow = (Accumulator ^ add) & (operand ^ add) & 0x80;
+            var result = (byte)(sum & 0xFF);
+            // Did an overflow occur (+/- 128)
+            _processorStatusFlags[6] = (sum > 127 || sum < -128);
+            var t = ((int)Accumulator ^ sum) & ((int)operand ^ sum) & 0x80;
+            var b = ((int)Accumulator ^ (byte)sum) & ((int)operand ^ (byte)sum) & 0x80;
+            // Did a carry occur?
+            _processorStatusFlags[0] = (sum != (sum & 0xFF));
+            Accumulator = result;
             CheckNegativeZeroFlags(Accumulator);
 
         }
@@ -561,8 +573,8 @@ namespace Project6502
         // RTS
         void ReturnfromSubroutine()
         {
-            var lsb = memory[(0x01 << 8 | _stackPointer++)];
-            var msb = memory[(0x01 << 8 | _stackPointer++)];
+            var lsb = memory[(0x01 << 8 | ++_stackPointer)];
+            var msb = memory[(0x01 << 8 | ++_stackPointer)];
             var newProgramCounter = (msb << 8 | lsb);
             _programCounter = (ushort)newProgramCounter;
         }

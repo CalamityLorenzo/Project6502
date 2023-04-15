@@ -82,14 +82,20 @@ namespace StackOperations
             var mem = new byte[ushort.MaxValue];
             // Top of stack, 
             // going to acc
-            mem[0x01FF] = 129;
+            mem[0x01FF] = 0;
             Six502Processor processor = createProcessor(mem);
             var program = new byte[]
             {
                 // Preamble have to move the stack pointer to stop a wrap around of SP (increments on push)
                 0xA2, // LDX 254
-                0xFE,
+                0xFf,
                 0xBA, // TXS
+
+                0xA9, //lda 129
+                0x81, 
+
+                0x48, // pHA 
+
 
                 0x68
             };
@@ -99,7 +105,7 @@ namespace StackOperations
             Trace.WriteLine($"A {r["A"]}");
             Trace.WriteLine($"SP {r["SP"]}");
             Trace.WriteLine($"N {r["N"]}");
-            Trace.WriteLine($"mem[{0x01FE}] {mem[0x01FE]}");
+            Trace.WriteLine($"mem[{0x01Ff}] {mem[0x01Ff]}");
 
             Assert.IsTrue(r["A"] == "129");
             Assert.IsTrue(r["SP"] == "255");
@@ -141,6 +147,9 @@ namespace StackOperations
             Six502Processor processor = createProcessor(mem);
             var program = new byte[]
             {
+                0xA9,
+                0x00,
+                0x08,
                 0x28
             };
             processor.AdhocProcess(program);
@@ -149,9 +158,9 @@ namespace StackOperations
             Trace.WriteLine($"Z {r["Z"]}");
             Trace.WriteLine($"I {r["I"]}");
             Trace.WriteLine($"mem[{0x01FF}] == {mem[0x01FF]}");
-            Assert.IsTrue(r["C"] == "True");
-            Assert.IsTrue(r["Z"] == "False");
-            Assert.IsTrue(r["I"] == "True");
+            Assert.IsTrue(r["C"] == "False");
+            Assert.IsTrue(r["Z"] == "True");
+            Assert.IsTrue(r["I"] == "False");
             //Assert.IsTrue(mem[0x01FE] == 1);
         }
 

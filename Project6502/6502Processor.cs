@@ -104,13 +104,15 @@ namespace Project6502
 
         private void ConvertToProcessorStatus(byte stackValue)
         {
-            var index = 0;
+            var bitIndex = 0;
+            var arrIndex = 7;
             var pos = 1;
-            while (index < 8)
+            while (bitIndex < 8)
             {
-                pos = index == 0 ? 1 : pos = pos * 2;
-                _processorStatusFlags[index] = (stackValue & pos) != 0 ? true : false;
-                index++;
+                pos = bitIndex == 0 ? 1 : pos = pos * 2;
+                _processorStatusFlags[arrIndex] = (stackValue & pos) != 0 ? true : false;
+                bitIndex++;
+                arrIndex--;
             }
         }
 
@@ -349,7 +351,7 @@ namespace Project6502
                     #endregion Jumps and Calls
 
                     #region Arithmetic
-                    case 0x69:
+                    case 0x69: // ADC
                     case 0x65:
                     case 0x75:
                     case 0x6D:
@@ -358,6 +360,17 @@ namespace Project6502
                     case 0x61:
                     case 0x71:
                         ADwithCarry(instruction);
+                        break;
+                    
+                    case 0xe9: //SBC
+                    case 0xe5:
+                    case 0xF5:
+                    case 0xED:
+                    case 0xFD:
+                    case 0xF9:
+                    case 0xE1:
+                    case 0xF1:
+                        SuBtractwithCarry(instruction);
                         break;
 
                     #endregion
