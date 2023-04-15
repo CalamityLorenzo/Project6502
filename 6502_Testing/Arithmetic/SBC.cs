@@ -19,8 +19,9 @@ namespace Arithmetic
                 0xA9,  // LDA #121
                 0x79,
 
-                0xE9,
-                0x12  // Val not memory location
+                0xE9,   
+                0x12,  // Val not memory location
+                0x03,
             };
             processor.AdhocProcess(program);
 
@@ -28,10 +29,13 @@ namespace Arithmetic
             Trace.WriteLine($"A = {registers["A"]}");
             Trace.WriteLine($"N = {registers["N"]}");
             Trace.WriteLine($"C = {registers["C"]}");
+            Trace.WriteLine($"V = {registers["V"]}");
+            Trace.WriteLine($"PC = {registers["PC"]}");
 
-            Assert.IsTrue(registers["A"] == "103");
+            Assert.IsTrue(registers["A"] == "102");
             Assert.IsTrue(registers["N"] == "False");
-            Assert.IsTrue(registers["C"] == "False");
+            Assert.IsTrue(registers["C"] == "True");
+            Assert.IsTrue(registers["V"] == "False");
 
         }
 

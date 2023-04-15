@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Reflection.Emit;
@@ -28,6 +29,7 @@ namespace Project6502
         // C arry
         // Z ero 
         // I nterrupt disable
+        // I AM 1
         // D ecimal Mode
         // B reak command
         // V Overfow
@@ -149,247 +151,268 @@ namespace Project6502
         private int Indirect() => (memory[(memory[_programCounter]) << 8 | (memory[++_programCounter])]); // Straight indirection 16bit address points to lsb where the actul thing is happening.
         #endregion
 
-        // We program is passed in as bytesm and thus already parsed.
-        public void AdhocProcess(byte[] buffer, ushort startMemory = 0x200)
+        /// <summary>
+        /// Load our program into memory, at the specifed location
+        /// </summary>
+        /// <param name="buffer">The constructed program</param>
+        /// <param name="startMemory">Where in memory the instructions are loaded.</param>
+        public void LoadProgram(byte[] buffer, ushort startMemory = 0x200)
         {
             _programCounter = startMemory; ;
             _programBuffer = buffer;
-
             this._programBuffer.CopyTo(memory, startMemory);
-            // That should stop 'em
-            memory[0] = 0x03;
+        }
+
+
+
+        // We program is passed in as bytesm and thus already parsed.
+        public void AdhocProcess(byte[] buffer, ushort startMemory = 0x200)
+        {
+            this.LoadProgram(buffer, startMemory);
             while (_programCounter < memory.Length)
             {
-                // do many things.
-                var instruction = memory[_programCounter++];
-                switch (instruction)
-                {
-                    case 0x03:  // astop
-                        return;
-                    case 0x50:
-                        BranchIfOverflowClear(); // BVC;
-                        break;
 
-                    case 0x18: // CLC
-                        CLearCarry();
-                        break;
-                    case 0xD8: // CLD
-                        CLearDecimal();
-                        break;
-                    case 0x58: // CLI
-                        CLearInterrupt();
-                        break;
-                    case 0xB8: // CLV
-                        CLearoVerflow();
-                        break;
-
-                    #region Stack Operations
-                    case 0x9A: // TSX
-                        TransferStackpointertoX();
-                        break;
-                    case 0xBA: // TXS
-                        TransferXtoStackPointer();
-                        break;
-                    case 0x48: //PHA
-                        PusHAccumulator();
-                        break;
-                    case 0x68: // PLA
-                        PulLAccumulator();
-                        break;
-                    case 0x08: // PHP
-                        PusHProcessorStatus();
-                        break;
-                    case 0x28: // PLP
-                        PulLProcessorstatus();
-                        break;
-                    #endregion Stack Operations
-                    #region Register Transfers
-                    case 0x98: // TYA
-                        TransferYToAccumulator();
-                        break;
-                    case 0xA8: // TAY
-                        TransferAccumulatorToY();
-                        break;
-
-                    case 0xAA: // TAX
-                        TransferAccumulatorToX();
-                        break;
-
-                    case 0x8A: // TXA
-                        TransferXToAccumulator();
-                        break;
-                    #endregion Register Transfers
-                    #region Load Store Operations
-                    case 0xA9: //LDA
-                    case 0xA5:
-                    case 0xB5:
-                    case 0xAD:
-                    case 0xBD:
-                    case 0xB9:
-                    case 0xA1:
-                    case 0xB1:
-                        LoaDtheAccumulator(instruction);
-                        break;
-                    case 0xA2: // LDX
-                    case 0xA6:
-                    case 0xB6:
-                    case 0xAE:
-                    case 0xBE:
-                        LoaDIntoXregister(instruction);
-                        break;
-
-                    case 0xA0: //LDY
-                    case 0xA4:
-                    case 0xB4:
-                    case 0xAC:
-                    case 0xBC:
-                        LoaDIntoYregister(instruction);
-                        break;
-
-                    case 0x85: // STA
-                    case 0x95:
-                    case 0x8D:
-                    case 0x9D:
-                    case 0x99:
-                    case 0x81:
-                    case 0x91:
-                        StoreTheAccumulator(instruction);
-                        break;
-
-                    case 0x86: // STX
-                    case 0x96:
-                    case 0x8E:
-                        StoreTheXregister(instruction);
-                        break;
-                    case 0x84: // STY
-                    case 0x94:
-                    case 0x8C:
-                        StoreTheYregister(instruction);
-                        break;
-                    #endregion Load Store Operations
-                    #region Logical Operations
-                    case 0x29: // AND
-                    case 0x25:
-                    case 0x35:
-                    case 0x2D:
-                    case 0x3D:
-                    case 0x39:
-                    case 0x21:
-                    case 0x31:
-                        LogicalAND(instruction);
-                        break;
-
-                    case 0x49: //EOR
-                    case 0x45:
-                    case 0x55:
-                    case 0x4D:
-                    case 0x5D:
-                    case 0x59:
-                    case 0x41:
-                    case 0x51:
-                        ExclusiveOR(instruction);
-                        break;
-
-                    case 0x09: // ORA
-                    case 0x05:
-                    case 0x15:
-                    case 0x0D:
-                    case 0x1D:
-                    case 0x19:
-                    case 0x01:
-                    case 0x11:
-                        LogicalInclusiveOR(instruction);
-                        break;
-
-                    case 0x24: // BIT
-                    case 0x2C:
-                        BIT(instruction);
-                        break;
-                    #endregion Logical Operations
-                    #region Shift
-                    case 0x0A:
-                    case 0x06:
-                    case 0x16:
-                    case 0x0E:
-                    case 0x1E:
-                        ASL(instruction);
-                        break;
-                    case 0x4A:
-                    case 0x46:
-                    case 0x56:
-                    case 0x4E:
-                    case 0x5E:
-                        LSR(instruction);
-                        break;
-
-                    case 0x2A: // ROL
-                    case 0x26:
-                    case 0x36:
-                    case 0x2E:
-                    case 0x3E:
-                        ROtateLeft(instruction);
-                        break;
-                    case 0x6A: // ROR
-                    case 0x66:
-                    case 0x76:
-                    case 0x6E:
-                    case 0x7E:
-                        ROtateRight(instruction);
-                        break;
-                    #endregion Shift
-                    #region Jumps and Calls
-                    case 0x4C: //JMP
-                    case 0x6C:
-                        Jump(instruction);
-                        break;
-                    case 0x20: // JSR
-                        JumptoSubRoutine();
-                        break;
-                    case 0x60: // RTS
-                        ReturnfromSubroutine();
-                        break;
-                    #endregion Jumps and Calls
-
-                    #region Arithmetic
-                    case 0x69: // ADC
-                    case 0x65:
-                    case 0x75:
-                    case 0x6D:
-                    case 0x7D:
-                    case 0x79:
-                    case 0x61:
-                    case 0x71:
-                        ADwithCarry(instruction);
-                        break;
-                    
-                    case 0xe9: //SBC
-                    case 0xe5:
-                    case 0xF5:
-                    case 0xED:
-                    case 0xFD:
-                    case 0xF9:
-                    case 0xE1:
-                    case 0xF1:
-                        SuBtractwithCarry(instruction);
-                        break;
-
-                    #endregion
-                    #region System
-                    case 0xEA:
-                        NoOperation();
-                        break;
-                    case 0x00:
-                        Break();
-                    break;
-                    case 0x40:
-                        ReturnFromInterrupt();
-                        break;
-                        #endregion
-                }
-
+                InstructionStep();
                 // 16 bit addressing
                 // _programCounter += 1;
             }
+        }
+
+        /// <summary>
+        /// 1 instruction step
+        /// nb: no relationship to the 'ticks' per instruction
+        /// (For a start I jhaven't even considered how I'm doing that and odn't get me started on the page banks).
+        /// 
+        /// </summary>
+        public void InstructionStep()
+        {
+            // do many things.
+            var instruction = memory[_programCounter++];
+            switch (instruction)
+            {
+                case 0x03:  // astop
+                    return;
+                case 0x50:
+                    BranchIfOverflowClear(); // BVC;
+                    break;
+
+                case 0x18: // CLC
+                    CLearCarry();
+                    break;
+                case 0xD8: // CLD
+                    CLearDecimal();
+                    break;
+                case 0x58: // CLI
+                    CLearInterrupt();
+                    break;
+                case 0xB8: // CLV
+                    CLearoVerflow();
+                    break;
+
+                #region Stack Operations
+                case 0x9A: // TSX
+                    TransferStackpointertoX();
+                    break;
+                case 0xBA: // TXS
+                    TransferXtoStackPointer();
+                    break;
+                case 0x48: //PHA
+                    PusHAccumulator();
+                    break;
+                case 0x68: // PLA
+                    PulLAccumulator();
+                    break;
+                case 0x08: // PHP
+                    PusHProcessorStatus();
+                    break;
+                case 0x28: // PLP
+                    PulLProcessorstatus();
+                    break;
+                #endregion Stack Operations
+                #region Register Transfers
+                case 0x98: // TYA
+                    TransferYToAccumulator();
+                    break;
+                case 0xA8: // TAY
+                    TransferAccumulatorToY();
+                    break;
+
+                case 0xAA: // TAX
+                    TransferAccumulatorToX();
+                    break;
+
+                case 0x8A: // TXA
+                    TransferXToAccumulator();
+                    break;
+                #endregion Register Transfers
+                #region Load Store Operations
+                case 0xA9: //LDA
+                case 0xA5:
+                case 0xB5:
+                case 0xAD:
+                case 0xBD:
+                case 0xB9:
+                case 0xA1:
+                case 0xB1:
+                    LoaDtheAccumulator(instruction);
+                    break;
+                case 0xA2: // LDX
+                case 0xA6:
+                case 0xB6:
+                case 0xAE:
+                case 0xBE:
+                    LoaDIntoXregister(instruction);
+                    break;
+
+                case 0xA0: //LDY
+                case 0xA4:
+                case 0xB4:
+                case 0xAC:
+                case 0xBC:
+                    LoaDIntoYregister(instruction);
+                    break;
+
+                case 0x85: // STA
+                case 0x95:
+                case 0x8D:
+                case 0x9D:
+                case 0x99:
+                case 0x81:
+                case 0x91:
+                    StoreTheAccumulator(instruction);
+                    break;
+
+                case 0x86: // STX
+                case 0x96:
+                case 0x8E:
+                    StoreTheXregister(instruction);
+                    break;
+                case 0x84: // STY
+                case 0x94:
+                case 0x8C:
+                    StoreTheYregister(instruction);
+                    break;
+                #endregion Load Store Operations
+                #region Logical Operations
+                case 0x29: // AND
+                case 0x25:
+                case 0x35:
+                case 0x2D:
+                case 0x3D:
+                case 0x39:
+                case 0x21:
+                case 0x31:
+                    LogicalAND(instruction);
+                    break;
+
+                case 0x49: //EOR
+                case 0x45:
+                case 0x55:
+                case 0x4D:
+                case 0x5D:
+                case 0x59:
+                case 0x41:
+                case 0x51:
+                    ExclusiveOR(instruction);
+                    break;
+
+                case 0x09: // ORA
+                case 0x05:
+                case 0x15:
+                case 0x0D:
+                case 0x1D:
+                case 0x19:
+                case 0x01:
+                case 0x11:
+                    LogicalInclusiveOR(instruction);
+                    break;
+
+                case 0x24: // BIT
+                case 0x2C:
+                    BIT(instruction);
+                    break;
+                #endregion Logical Operations
+                #region Shift
+                case 0x0A:
+                case 0x06:
+                case 0x16:
+                case 0x0E:
+                case 0x1E:
+                    ASL(instruction);
+                    break;
+                case 0x4A:
+                case 0x46:
+                case 0x56:
+                case 0x4E:
+                case 0x5E:
+                    LSR(instruction);
+                    break;
+
+                case 0x2A: // ROL
+                case 0x26:
+                case 0x36:
+                case 0x2E:
+                case 0x3E:
+                    ROtateLeft(instruction);
+                    break;
+                case 0x6A: // ROR
+                case 0x66:
+                case 0x76:
+                case 0x6E:
+                case 0x7E:
+                    ROtateRight(instruction);
+                    break;
+                #endregion Shift
+                #region Jumps and Calls
+                case 0x4C: //JMP
+                case 0x6C:
+                    Jump(instruction);
+                    break;
+                case 0x20: // JSR
+                    JumptoSubRoutine();
+                    break;
+                case 0x60: // RTS
+                    ReturnfromSubroutine();
+                    break;
+                #endregion Jumps and Calls
+
+                #region Arithmetic
+                case 0x69: // ADC
+                case 0x65:
+                case 0x75:
+                case 0x6D:
+                case 0x7D:
+                case 0x79:
+                case 0x61:
+                case 0x71:
+                    ADwithCarry(instruction);
+                    break;
+
+                case 0xe9: //SBC
+                case 0xe5:
+                case 0xF5:
+                case 0xED:
+                case 0xFD:
+                case 0xF9:
+                case 0xE1:
+                case 0xF1:
+                    SuBtractwithCarry(instruction);
+                    break;
+
+                #endregion
+                #region System
+                case 0xEA:
+                    NoOperation();
+                    break;
+                case 0x00:
+                    Break();
+                    break;
+                case 0x40:
+                    ReturnFromInterrupt();
+                    break;
+                    #endregion
+            }
+
         }
     }
 }

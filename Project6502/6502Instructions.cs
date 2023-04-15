@@ -526,7 +526,7 @@ namespace Project6502
                 0xF1 => memory[Indexed_Y()],
             };
             // Do the addition (we don't know here if there has been overflow
-            var sum = Accumulator - operand - (_processorStatusFlags[0] ? 1 : 0);
+            var sum = Accumulator - operand - (1-(_processorStatusFlags[0] ? 1 : 0));
 
             var result = (byte)(sum & 0xFF);
             // Did an overflow occur (+/- 128)
@@ -534,7 +534,7 @@ namespace Project6502
             var t = ((int)Accumulator ^ sum) & ((int)operand ^ sum) & 0x80;
             var b = ((int)Accumulator ^ (byte)sum) & ((int)operand ^ (byte)sum) & 0x80;
             // Did a carry occur?
-            _processorStatusFlags[0] = (sum != (sum & 0xFF));
+            _processorStatusFlags[0] = !(sum != (sum & 0xFF));
             Accumulator = result;
             CheckNegativeZeroFlags(Accumulator);
 
