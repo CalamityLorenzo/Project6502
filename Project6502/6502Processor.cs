@@ -17,6 +17,8 @@ namespace Project6502
      */
     public partial class Six502Processor
     {
+        private bool _abortTriggered = false;
+
         byte Accumulator;
         byte XRegister;
         byte YRegister;
@@ -173,8 +175,8 @@ namespace Project6502
             {
 
                 InstructionStep();
-                // 16 bit addressing
-                // _programCounter += 1;
+                // Not actually recorded anywhere...
+                if (_abortTriggered) break;
             }
         }
 
@@ -191,6 +193,7 @@ namespace Project6502
             switch (instruction)
             {
                 case 0x03:  // astop
+                    _abortTriggered = true;
                     return;
                 case 0x50:
                     BranchIfOverflowClear(); // BVC;

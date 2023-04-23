@@ -481,7 +481,7 @@ namespace Project6502
         /// ADC
         /// Add with Carry
         /// </summary>
-        void ADwithCarry(byte operation)
+        async void ADwithCarry(byte operation)
         {
             var operand = operation switch
             {
@@ -494,20 +494,25 @@ namespace Project6502
                 0x61 => memory[Indirect_X()],
                 0x71 => memory[Indexed_Y()],
             };
-            // Do the addition (we don't know here if there has been overflow
-            var sum = Accumulator + operand + (_processorStatusFlags[0] ? 1 : 0);
-            // Ensure we are only grabbing the first 8 bits
-            var result = (byte)(sum & 0xFF);
-            // Did an overflow occur (+/- 128)
-            _processorStatusFlags[6] = (sum > 127 || sum < -128);
-            var t = ((int)Accumulator ^ sum) & ((int)operand ^ sum) & 0x80;
-            var b = ((int)Accumulator ^ (byte)sum) & ((int)operand ^ (byte)sum) & 0x80;
-            // Did a carry occur?
-            _processorStatusFlags[0] = (sum != (sum & 0xFF));
-            Accumulator = result;
-            CheckNegativeZeroFlags(Accumulator);
+            Add(operand);
 
         }
+
+        private void Add(int arg)
+        {
+            // Do the addition (we don't know here if there has been overflow
+            var sum = Accumulator + arg + (_processorStatusFlags[0] ? 1 : 0);
+            // Ensure we are only grabbing the first 8 bits
+            // var carry = (byte)(sum & 0xFF);
+            // Did an overflow occur (+/- 128)
+            _processorStatusFlags[6] = ((~(Accumulator ^ arg) & (Accumulator ^ sum) & 0x80) != 1);
+
+            // Did a carry occur?
+            _processorStatusFlags[0] = (sum > 0xFF);
+            Accumulator = (byte)sum;
+            CheckNegativeZeroFlags(Accumulator);
+        }
+
         /// <summary>
         /// SBC
         /// Add with Carry
@@ -525,18 +530,21 @@ namespace Project6502
                 0xE1 => memory[Indirect_X()],
                 0xF1 => memory[Indexed_Y()],
             };
-            // Do the addition (we don't know here if there has been overflow
-            var sum = Accumulator - operand - (1-(_processorStatusFlags[0] ? 1 : 0));
 
-            var result = (byte)(sum & 0xFF);
-            // Did an overflow occur (+/- 128)
-            _processorStatusFlags[6] = (sum > 127 || sum < -128);
-            var t = ((int)Accumulator ^ sum) & ((int)operand ^ sum) & 0x80;
-            var b = ((int)Accumulator ^ (byte)sum) & ((int)operand ^ (byte)sum) & 0x80;
-            // Did a carry occur?
-            _processorStatusFlags[0] = !(sum != (sum & 0xFF));
-            Accumulator = result;
-            CheckNegativeZeroFlags(Accumulator);
+            Add(-operand);
+            //// Do the addition (we don't know here if there has been overflow
+            //var sum = Accumulator - operand - (1-(_processorStatusFlags[0] ? 1 : 0));
+
+            //var result = (byte)(sum & 0xFF);
+            //// Did an overflow occur (+/- 128)
+            //_processorStatusFlags[6] = (sum > 127 || sum < -128);
+            //var t = ((int)Accumulator ^ sum) & ((int)operand ^ sum) & 0x80;
+            //var b = ((int)Accumulator ^ (byte)sum) & ((int)operand ^ (byte)sum) & 0x80;
+            //var c = ~(Accumulator ^ operand) & (Accumulator ^ sum) & 0x80;
+            //// Did a carry occur?
+            //_processorStatusFlags[0] = !((sum >> 6 & 1) == 1);
+            //Accumulator = result;
+            //CheckNegativeZeroFlags(Accumulator);
 
         }
         #endregion

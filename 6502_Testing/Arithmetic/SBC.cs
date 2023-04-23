@@ -32,10 +32,10 @@ namespace Arithmetic
             Trace.WriteLine($"V = {registers["V"]}");
             Trace.WriteLine($"PC = {registers["PC"]}");
 
-            Assert.IsTrue(registers["A"] == "102");
+            Assert.IsTrue(registers["A"] == "103");
             Assert.IsTrue(registers["N"] == "False");
-            Assert.IsTrue(registers["C"] == "True");
-            Assert.IsTrue(registers["V"] == "False");
+            Assert.IsTrue(registers["C"] == "False");
+            Assert.IsTrue(registers["V"] == "True");
 
         }
 
@@ -59,11 +59,11 @@ namespace Arithmetic
             Trace.WriteLine($"A = {registers["A"]}");
             Trace.WriteLine($"N = {registers["N"]}");
             Trace.WriteLine($"C = {registers["C"]}");
-            Trace.WriteLine($"V = {registers["C"]}");
+            Trace.WriteLine($"V = {registers["V"]}");
 
-            Assert.IsTrue(registers["A"] == "11");
+            Assert.IsTrue(registers["A"] == "23");
             Assert.IsTrue(registers["N"] == "False");
-            Assert.IsTrue(registers["C"] == "True");
+            Assert.IsTrue(registers["C"] == "False");
             Assert.IsTrue(registers["V"] == "True");
 
         }
@@ -94,10 +94,10 @@ namespace Arithmetic
             Trace.WriteLine($"N = {registers["N"]}");
             Trace.WriteLine($"C = {registers["C"]}");
 
-            Assert.IsTrue(registers["A"] == "69");
+            Assert.IsTrue(registers["A"] == "165");
             Assert.IsTrue(registers["X"] == "9");
-            Assert.IsTrue(registers["N"] == "False");
-            Assert.IsTrue(registers["C"] == "True");
+            Assert.IsTrue(registers["N"] == "True");
+            Assert.IsTrue(registers["C"] == "False");
 
         }
 
@@ -127,10 +127,10 @@ namespace Arithmetic
             Trace.WriteLine($"N = {registers["N"]}");
             Trace.WriteLine($"C = {registers["C"]}");
 
-            Assert.IsTrue(registers["A"] == "69");
+            Assert.IsTrue(registers["A"] == "165");
             Assert.IsTrue(registers["X"] == "9");
-            Assert.IsTrue(registers["N"] == "False");
-            Assert.IsTrue(registers["C"] == "True");
+            Assert.IsTrue(registers["N"] == "True");
+            Assert.IsTrue(registers["C"] == "False");
 
         }
 
@@ -160,10 +160,10 @@ namespace Arithmetic
             Trace.WriteLine($"N = {registers["N"]}");
             Trace.WriteLine($"C = {registers["C"]}");
 
-            Assert.IsTrue(registers["A"] == "69");
+            Assert.IsTrue(registers["A"] == "165");
             Assert.IsTrue(registers["X"] == "9");
-            Assert.IsTrue(registers["N"] == "False");
-            Assert.IsTrue(registers["C"] == "True");
+            Assert.IsTrue(registers["N"] == "True");
+            Assert.IsTrue(registers["C"] == "False");
 
         }
         [TestMethod("SBC : Absolute.Y")]
@@ -193,11 +193,11 @@ namespace Arithmetic
             Trace.WriteLine($"N = {registers["N"]}");
             Trace.WriteLine($"C = {registers["C"]}");
 
-            Assert.IsTrue(registers["A"] == "69");
+            Assert.IsTrue(registers["A"] == "165");
             Assert.IsTrue(registers["X"] == "0");
             Assert.IsTrue(registers["Y"] == "9");
-            Assert.IsTrue(registers["N"] == "False");
-            Assert.IsTrue(registers["C"] == "True");
+            Assert.IsTrue(registers["N"] == "True");
+            Assert.IsTrue(registers["C"] == "False");
 
         }
     }
