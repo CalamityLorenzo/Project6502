@@ -148,7 +148,14 @@ namespace Project6502
         /// The indirect bit is having to query the memory
         /// </summary>
         /// <returns></returns>
-        private int Indirect_X() => (memory[((memory[_programCounter] + XRegister) & 0xFF) + 1] << 8 | memory[((memory[_programCounter++] + XRegister) & 0xFF)]); // Indexed Indirect x ($,X)
+        private int Indirect_X()
+        {
+            //byte 1
+            var t=  (memory[((memory[_programCounter] + XRegister) & 0xFF) + 1] << 8 
+            // byte 2
+                  | memory[((memory[_programCounter++] + XRegister) & 0xFF)]); // Indexed Indirect x ($,X)
+            return t;
+        }
         private int Indexed_Y() => (memory[memory[_programCounter] + 1] << 8 | memory[memory[_programCounter++]]) + YRegister; // Indirect  + Index Y
         private int Indirect() => (memory[(memory[_programCounter]) << 8 | (memory[++_programCounter])]); // Straight indirection 16bit address points to lsb where the actul thing is happening.
         #endregion

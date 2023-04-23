@@ -198,5 +198,49 @@ namespace Arithmetic
             Assert.IsTrue(registers["C"] == "True");
 
         }
+
+        [TestMethod("ADC : Indirect.X")]
+        public void ADC_Indirect_X()
+        {
+            // put a value in the zero page (0->FF)
+            var mem = new byte[ushort.MaxValue];
+
+            // A - 100- C
+            mem[64 + 16] = 100;  // 0x64
+            mem[64 + 17] = 101;  // 0x65
+
+            mem[0x6564] = 85;
+            var processor = createProcessor(mem);
+
+
+            var program = new byte[]
+            {
+                0xA9, // LDA #105
+                0x69,
+                0xA2, // LDX #16
+                0x10,
+
+                0x61, // ADC 0x40
+                0x40,
+                0x03
+            };
+            processor.AdhocProcess(program);
+
+
+            var registers = processor.Registers();
+            Trace.WriteLine($"A = {registers["A"]}");
+            Trace.WriteLine($"X = {registers["X"]}");
+            Trace.WriteLine($"Y = {registers["Y"]}");
+            Trace.WriteLine($"N = {registers["N"]}");
+            Trace.WriteLine($"C = {registers["C"]}");
+
+            Assert.IsTrue(registers["A"] == "190");
+            Assert.IsTrue(registers["X"] == "16");
+            Assert.IsTrue(registers["Y"] == "0");
+            Assert.IsTrue(registers["N"] == "True");
+            Assert.IsTrue(registers["C"] == "False");
+
+
+        }
     }
 }
