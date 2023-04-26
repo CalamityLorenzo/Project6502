@@ -5,13 +5,8 @@ namespace Project6502
 {
     public partial class Six502Processor
     {
-        // BOX
-        void BranchIfOverflowClear()
-        {
-            var offSet = (sbyte)memory[_programCounter++];
-            this._programCounter = ((ushort)(_programCounter + offSet));
-        }
 
+        #region status_flag_changes
         // CLC
         void CLearCarry()
         {
@@ -39,7 +34,7 @@ namespace Project6502
         {
             this._processorStatusFlags[6] = false;
         }
-
+        #endregion
         #region stack operations
         /// <summary>
         /// TSX
@@ -74,7 +69,7 @@ namespace Project6502
         /// </summary>
         void PulLAccumulator()
         {
-            var pos = (0x01 << 8 | ++ _stackPointer);
+            var pos = (0x01 << 8 | ++_stackPointer);
             Accumulator = memory[pos];
             CheckNegativeZeroFlags(Accumulator);
         }
@@ -92,7 +87,7 @@ namespace Project6502
         /// </summary>
         void PulLProcessorstatus()
         {
-            var val = memory[(0x01 << 8 | ++ _stackPointer)];
+            var val = memory[(0x01 << 8 | ++_stackPointer)];
             ConvertToProcessorStatus(val);
         }
         #endregion
@@ -549,6 +544,90 @@ namespace Project6502
         }
         #endregion
 
+        #region branches
+        /// <summary>
+        /// This is the general branch behaviour doo-hicky.
+        /// </summary>
+        /// <param name="predicateResult"></param>
+        void Branch(bool predicateResult)
+        {
+
+            if (predicateResult)
+            {
+                _programCounter = memory[++_programCounter];
+            }
+            _programCounter++;
+        }
+
+        /// <summary>
+        /// BCC
+        /// </summary>
+        void BranchIfCarryClear()
+        {
+            Branch(_processorStatusFlags[0] == false);
+        }
+
+        /// <summary>
+        /// BCS
+        /// </summary>
+        void BranchIfCarrySet()
+        {
+            Branch(_processorStatusFlags[0]);
+        }
+        /// <summary>
+        /// BEQ 
+        /// Branch if Equal
+        /// </summary>
+        void BranchIfZeroSet()
+        {
+            Branch(_processorStatusFlags[1]);
+        }
+        /// <summary>
+        /// BNE
+        /// Branch if Not equal
+        /// </summary>
+        void BranchIfZeroClear()
+        {
+            Branch(_processorStatusFlags[1]== false);
+        }
+
+        /// <summary>
+        /// BMI
+        /// Branch if Minus
+        /// </summary>
+        void BranchIfNegativeSet()
+        {
+            Branch(_processorStatusFlags[7]);
+        }
+
+        /// <summary>
+        /// BPL
+        /// Branch if Positive
+        /// </summary>
+        void BranchIfNegativeClear()
+        {
+            Branch(_processorStatusFlags[7] == false);
+        }
+        /// <summary>
+        /// BVC
+        /// Branch if Overflow clear
+        /// </summary>
+        void BranchIfOverflowClear()
+        {
+            Branch(_processorStatusFlags[6]==false);
+        }
+        /// <summary>
+        /// BVS
+        /// Branch if Overflow set
+        /// </summary>
+        void BranchIfOverflowSet()
+        {
+            Branch(_processorStatusFlags[7] == true); ;
+        }
+
+        #endregion branches
+
+        #region jumps_n_calls
         /// <summary>
         /// JMP
         /// </summary>
@@ -586,8 +665,7 @@ namespace Project6502
             var newProgramCounter = (msb << 8 | lsb);
             _programCounter = (ushort)newProgramCounter;
         }
-
-
+        #endregion jumps_n_calls
     }
 
 

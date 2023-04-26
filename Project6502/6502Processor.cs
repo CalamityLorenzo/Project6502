@@ -151,8 +151,8 @@ namespace Project6502
         private int Indirect_X()
         {
             //byte 1
-            var t=  (memory[((memory[_programCounter] + XRegister) & 0xFF) + 1] << 8 
-            // byte 2
+            var t = (memory[((memory[_programCounter] + XRegister) & 0xFF) + 1] << 8
+                  // byte 2
                   | memory[((memory[_programCounter++] + XRegister) & 0xFF)]); // Indexed Indirect x ($,X)
             return t;
         }
@@ -202,9 +202,6 @@ namespace Project6502
                 case 0x03:  // astop
                     _abortTriggered = true;
                     return;
-                case 0x50:
-                    BranchIfOverflowClear(); // BVC;
-                    break;
 
                 case 0x18: // CLC
                     CLearCarry();
@@ -410,6 +407,35 @@ namespace Project6502
                     break;
 
                 #endregion
+
+                #region Branches
+                case 0x90: // BCC
+                    BranchIfCarryClear();
+                    break;
+                case 0xB0: //BCS
+                    BranchIfCarrySet();
+                    break;
+                case 0xF0: // BEQ
+                    BranchIfZeroSet();
+                    break;
+                case 0x30: // BMI
+                    BranchIfNegativeSet();
+                    break;
+                case 0xD0: // BNE
+                    BranchIfZeroClear();
+                    break;
+                case 0x10: // BPL
+                    BranchIfNegativeClear();
+                    break;
+                case 0x50: // BVC
+                    BranchIfOverflowClear();
+                    break;
+                case 0x70: // BVS
+                    BranchIfOverflowSet();
+                    break;
+
+                #endregion Branches
+
                 #region System
                 case 0xEA:
                     NoOperation();
