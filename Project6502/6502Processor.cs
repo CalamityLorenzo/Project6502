@@ -167,7 +167,7 @@ namespace Project6502
         /// <param name="startMemory">Where in memory the instructions are loaded.</param>
         public void LoadProgram(byte[] buffer, ushort startMemory = 0x200)
         {
-            _programCounter = startMemory; ;
+            _programCounter = startMemory;
             _programBuffer = buffer;
             this._programBuffer.CopyTo(memory, startMemory);
         }

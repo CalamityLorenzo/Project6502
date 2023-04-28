@@ -551,10 +551,11 @@ namespace Project6502
         /// <param name="predicateResult"></param>
         void Branch(bool predicateResult)
         {
-
             if (predicateResult)
             {
-                _programCounter = memory[++_programCounter];
+                var offset = (sbyte)memory[_programCounter];
+                _programCounter = (ushort)(_programCounter + offset);
+                _programCounter++;
             }
             _programCounter++;
         }
@@ -588,7 +589,7 @@ namespace Project6502
         /// </summary>
         void BranchIfZeroClear()
         {
-            Branch(_processorStatusFlags[1]== false);
+            Branch(_processorStatusFlags[1] == false);
         }
 
         /// <summary>
@@ -614,7 +615,7 @@ namespace Project6502
         /// </summary>
         void BranchIfOverflowClear()
         {
-            Branch(_processorStatusFlags[6]==false);
+            Branch(_processorStatusFlags[6] == false);
         }
         /// <summary>
         /// BVS
