@@ -202,7 +202,7 @@ namespace Project6502
                 case 0x03:  // astop
                     _abortTriggered = true;
                     return;
-
+                #region status_flag_changes
                 case 0x18: // CLC
                     CLearCarry();
                     break;
@@ -215,6 +215,16 @@ namespace Project6502
                 case 0xB8: // CLV
                     CLearoVerflow();
                     break;
+                case 0x38:
+                    SetCarryFlag();
+                    break;
+                case 0xF8:
+                    SetDecimalFlag();
+                    break;
+                case 0x78:
+                    SetInterruptFlag();
+                    break;
+                #endregion status_flag_changes
 
                 #region Stack Operations
                 case 0x9A: // TSX

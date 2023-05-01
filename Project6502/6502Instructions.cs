@@ -34,6 +34,27 @@ namespace Project6502
         {
             this._processorStatusFlags[6] = false;
         }
+        /// <summary>
+        /// SEC
+        /// </summary>
+        void SetCarryFlag()
+        {
+            _processorStatusFlags[0] = true;
+        }
+        /// <summary>
+        /// SED
+        /// </summary>
+        void SetDecimalFlag()
+        {
+            _processorStatusFlags[3] = true;
+        }
+        /// <summary>
+        /// SEI
+        /// </summary>
+        void SetInterruptFlag()
+        {
+            _processorStatusFlags[2] = true;
+        }
         #endregion
         #region stack operations
         /// <summary>
@@ -555,7 +576,6 @@ namespace Project6502
             {
                 var offset = (sbyte)memory[_programCounter];
                 _programCounter = (ushort)(_programCounter + offset);
-                _programCounter++;
             }
             _programCounter++;
         }
@@ -623,7 +643,7 @@ namespace Project6502
         /// </summary>
         void BranchIfOverflowSet()
         {
-            Branch(_processorStatusFlags[7] == true); ;
+            Branch(_processorStatusFlags[6] == true); ;
         }
 
         #endregion branches
@@ -667,6 +687,7 @@ namespace Project6502
             _programCounter = (ushort)newProgramCounter;
         }
         #endregion jumps_n_calls
+
     }
 
 
