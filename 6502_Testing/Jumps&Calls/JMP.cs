@@ -21,7 +21,7 @@ namespace Jumps_Calls
             {
                 0x4C,  // JMP 80 (<<8 | 6a)
                 0x80,
-                0x6A
+                0x6A,
             };
             processor.AdhocProcess(program);
 

@@ -246,6 +246,7 @@ namespace Project6502
                     PulLProcessorstatus();
                     break;
                 #endregion Stack Operations
+
                 #region Register Transfers
                 case 0x98: // TYA
                     TransferYToAccumulator();
@@ -380,6 +381,44 @@ namespace Project6502
                     ROtateRight(instruction);
                     break;
                 #endregion Shift
+                #region Increments&Decrements
+                case 0xE6:  // INC
+                case 0xF6:
+                case 0xEE:
+                case 0xFE:
+                    {
+                        IncrementMemory(instruction);
+                        break;
+                    }
+                case 0xC6: // DEC
+                case 0xD6:
+                case 0xCE:
+                case 0xDE:
+                    {
+                        DecrementMemory(instruction);
+                        break;
+                    }
+                case 0xCA:  //DEX
+                    {
+                        DecrementXRegister(instruction);
+                        break;
+                    }
+                case 0x88:  //DEY
+                    {
+                        DecrementYRegister(instruction);
+                        break;
+                    }
+                case 0xE8:  // INX
+                    {
+                        IncrementXRegister(instruction);
+                        break;
+                    }
+                case 0xC8: // INY
+                    {
+                        IncrementYRegister(instruction);
+                        break;
+                    }
+                #endregion
                 #region Jumps and Calls
                 case 0x4C: //JMP
                 case 0x6C:

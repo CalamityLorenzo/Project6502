@@ -492,6 +492,99 @@ namespace Project6502
         }
         #endregion shifts
 
+        #region Increment&Decrement
+        /// <summary>
+        /// INC
+        /// Increment
+        /// </summary>
+        /// <param name="operation"></param>
+        void IncrementMemory(byte operation)
+        {
+            var location = operation switch
+            {
+                0xE6 => ZeroPage(),
+                0xF6 => ZeroPage_X(),
+                0xEE => Absolute(),
+                0xFE => Absolute_X(),
+            };
+
+            var val = memory[location] += 1;
+
+            //var t = (memory[_programCounter - 1] + XRegister) & 0xFF;
+            // Program counter has bee shifted forward, but don't tell any one
+            memory[location] = val;
+            CheckNegativeZeroFlags(val);
+        }
+
+        /// <summary>
+        /// INX
+        /// Increment
+        /// </summary>
+        /// <param name="operation"></param>
+        void IncrementXRegister(byte operation)
+        {
+            XRegister += 1;
+            CheckNegativeZeroFlags(XRegister);
+        }
+
+        /// <summary>
+        /// INY
+        /// Increment
+        /// </summary>
+        /// <param name="operation"></param>
+        void IncrementYRegister(byte operation)
+        {
+            YRegister += 1;
+            CheckNegativeZeroFlags(YRegister);
+        }
+
+        /// <summary>
+        /// DEC
+        /// Decrement some bit of memory.
+        /// </summary>
+        /// <param name="operation"></param>
+        void DecrementMemory(byte operation)
+        {
+            var location = operation switch
+            {
+                0xC6 => ZeroPage(),
+                0xD6 => ZeroPage_X(),
+                0xCE => Absolute(),
+                0xDE => Absolute_X(),
+            };
+
+            var val = memory[location] -= 1;
+
+            //var t = (memory[_programCounter - 1] + XRegister) & 0xFF;
+            // Program counter has bee shifted forward, but don't tell any one
+            memory[location] = val;
+            CheckNegativeZeroFlags(val);
+        }
+
+        /// <summary>
+        /// DEX
+        /// Decrement the x
+        /// </summary>
+        /// <param name="operation"></param>
+        void DecrementXRegister(byte operation)
+        {
+            XRegister -= 1;
+            CheckNegativeZeroFlags(XRegister);
+        }
+
+        /// <summary>
+        /// DEY
+        /// Decrement the Y
+        /// </summary>
+        /// <param name="operation"></param>
+        void DecrementYRegister(byte operation)
+        {
+            YRegister -= 1;
+            CheckNegativeZeroFlags(YRegister);
+        }
+
+        #endregion
+
         #region Arithimetic
         /// <summary>
         /// ADC
