@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 
 namespace Project6502
 {
@@ -39,10 +40,11 @@ namespace Project6502
         bool[] _processorStatusFlags = new bool[8];
 
         ushort _programCounter;
-
         // Memory page 1
         // $0100-$01ff = 256->511`
         byte[] stackData = new byte[255];
+        private readonly InterruptStructure? _BRK;
+
         /// <summary>
         /// Our memory.
         /// </summary>
@@ -57,6 +59,22 @@ namespace Project6502
         public Six502Processor(byte[] memory)
         {
             this.memory = memory;
+        }
+
+        public Six502Processor(byte[] memory, InterruptStructure? BRK) : this(memory)
+        {
+            this._BRK = BRK;
+            ConfigureInterrupts();
+        }
+
+        private void ConfigureInterrupts()
+        {
+            if (_BRK != null)
+            {
+                memory[0xFFFE] = (byte)(_BRK.Value.Address & 0xFF);
+                memory[0xFFFF] = (byte)(_BRK.Value.Address >> 8);
+                _BRK.Value.Method.CopyTo(memory, _BRK.Value.Address);
+            }
         }
 
         public Dictionary<string, string> Registers() => new Dictionary<string, string>
@@ -126,6 +144,7 @@ namespace Project6502
             _processorStatusFlags[5] = true;
             // Stack pointer must be at the top
             _stackPointer = 0xFF;
+            ConfigureInterrupts();
         }
 
 

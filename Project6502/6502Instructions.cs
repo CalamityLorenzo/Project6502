@@ -362,10 +362,17 @@ namespace Project6502
         /// </summary>
         void Break()
         {
+            _programCounter += 2;
             memory[(0x01 << 8 | _stackPointer--)] = (byte)(_programCounter & 0xFF);
             memory[(0x01 << 8 | _stackPointer--)] = (byte)(_programCounter >> 8);
+
             PusHProcessorStatus();
-            this._processorStatusFlags[6] = true;
+            _processorStatusFlags[5] = true;
+
+            // Get the vector/memoryAddress
+            var BRKAddress = memory[(0xFFFF << 8 | 0xFFFE)];
+            _programCounter = BRKAddress;
+
         }
 
         /// <summary>
@@ -375,6 +382,7 @@ namespace Project6502
         void ReturnFromInterrupt()
         {
             var _processorFlags = memory[(0x01 << 8 | ++_stackPointer)];
+            _programCounter = (ushort)(memory[(0x01 << 8 | _stackPointer--)] << 8 | memory[(0x01 << 8 | _stackPointer--)]);
             ConvertToProcessorStatus(_processorFlags);
         }
 
