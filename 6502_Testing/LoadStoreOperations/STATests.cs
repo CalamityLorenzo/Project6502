@@ -204,21 +204,19 @@ namespace LoadStoreOperations
 
             var memory = new byte[ushort.MaxValue];
 
-            memory[0xA2] = 00;
-            memory[163] = 10;
-
+            memory[0xA1] = 0x90; //lsb 
+            memory[0xA2] = 01;   // msb
             var processor = createProcessor(memory);
             var program = new byte[]
             {
-                0xA9, // LDA 64
-                0x32,
-                0xA8, // Put 64 in Y TAY
+                0xA9,
+                0x96, // 150 in Acc
 
-                0xA9, // LDA 200
-                0xC8,
+                0xA0,
+                0x07, // 7 in Y
 
-                0x91, // STA (mem,X) = ($A2, $32) = mem(($A2+ $32)+1) , mem(($A2+ $32))
-                0xA2, 
+                0x91, // STA 150 in (00 + 200) + 7 =mem207
+                0xA1, // (mem[161] mem[162])
             };
 
             processor.AdhocProcess(program);
@@ -227,17 +225,17 @@ namespace LoadStoreOperations
 
             Trace.WriteLine($"A {registers["A"]}");
             Trace.WriteLine($"Y = {registers["Y"]}");
-            var memAddress = (0xA2);
-            var lsb = memory[memAddress];
-            var msb = memory[memAddress + 1];
+            var memAddress = (407);
+            var lsb = memory[0xA1];
+            var msb = memory[0xA2];
             var yReg = int.Parse(registers["Y"]);
-            Trace.WriteLine($"lsb = {memory[memAddress]}");
-            Trace.WriteLine($"msb = {memory[memAddress + 1]}");
+            Trace.WriteLine($"lsb = {memory[0xA1]}");
+            Trace.WriteLine($"msb = {memory[0xA2 + 1]}");
             Trace.WriteLine($"Address = {(msb<<8 | lsb) + yReg }");
 
 
             Trace.WriteLine($"mem[{(msb << 8 | lsb) + yReg}] =  {memory[(msb << 8 | lsb) + yReg]}");
-            Assert.IsTrue(memory[(msb << 8 | lsb)+yReg   ] == 0xC8);
+            Assert.IsTrue(memory[(msb << 8 | lsb)+yReg   ] == 0x96);
 
         }
     }

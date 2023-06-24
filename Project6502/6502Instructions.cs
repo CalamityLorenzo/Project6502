@@ -362,6 +362,9 @@ namespace Project6502
         /// </summary>
         void Break()
         {
+            memory[(0x01 << 8 | _stackPointer--)] = (byte)(_programCounter & 0xFF);
+            memory[(0x01 << 8 | _stackPointer--)] = (byte)(_programCounter >> 8);
+            PusHProcessorStatus();
             this._processorStatusFlags[6] = true;
         }
 

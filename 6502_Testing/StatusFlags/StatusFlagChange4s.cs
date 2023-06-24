@@ -141,6 +141,60 @@ namespace StatusFlags
 
         }
 
+        [TestMethod("SEC : Set carry Flag")]
+        public void SetCarryFlat()
+        {
 
+            var mem = new byte[ushort.MaxValue];
+            Six502Processor processor = createProcessor(mem);
+            // Branching is relative.
+            // THe programm is placed at 0x200
+            // so we need to add 14 to get to 0x215  from 0x201
+            var program = new byte[]
+            {
+                0x38
+            };
+            processor.LoadProgram(program);
+            processor.InstructionStep();
+            var regs = processor.Registers();
+            Trace.WriteLine($"Carry = {regs["C"]}");
+            Assert.IsTrue(regs["C"] == "True");
+        }
+
+        [TestMethod("SED : Set Decimal Flag")]
+        public void SetDecimalFlag()
+        {
+
+            var mem = new byte[ushort.MaxValue];
+            Six502Processor processor = createProcessor(mem);
+
+            var program = new byte[]
+            {
+                0xF8
+            };
+            processor.LoadProgram(program);
+            processor.InstructionStep();
+            var regs = processor.Registers();
+            Trace.WriteLine($"Carry = {regs["D"]}");
+            Assert.IsTrue(regs["D"] == "True");
+        }
+
+        [TestMethod("SEI : Set interrupt  Flag")]
+        public void SetInterruprtFlag()
+        {
+
+            var mem = new byte[ushort.MaxValue];
+            Six502Processor processor = createProcessor(mem);
+
+            var program = new byte[]
+            {
+                0x78
+            };
+            processor.LoadProgram(program);
+            processor.InstructionStep();
+            var regs = processor.Registers();
+            Trace.WriteLine($"Carry = {regs["I"]}");
+            Assert.IsTrue(regs["I"] == "True");
+        }
     }
 }

@@ -156,6 +156,8 @@ namespace Project6502
                   | memory[((memory[_programCounter++] + XRegister) & 0xFF)]); // Indexed Indirect x ($,X)
             return t;
         }
+
+        // Indirect Indexed Get 16 bit address from memory locations pointed at. + value of y to result.
         private int Indexed_Y() => (memory[memory[_programCounter] + 1] << 8 | memory[memory[_programCounter++]]) + YRegister; // Indirect  + Index Y
         private int Indirect() => (memory[(memory[_programCounter]) << 8 | (memory[++_programCounter])]); // Straight indirection 16bit address points to lsb where the actul thing is happening.
         #endregion
