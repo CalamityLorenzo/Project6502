@@ -27,7 +27,7 @@ namespace LoadStoreOperations
                 0xA2,
             };
 
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
 
@@ -57,7 +57,7 @@ namespace LoadStoreOperations
                 0xA2,
             };
 
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
 
@@ -83,7 +83,7 @@ namespace LoadStoreOperations
                 0xA2, // Remeber A full 16bit address = 0xA240 (Not 0xA2 + 0x40)
             };
 
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
 
@@ -115,7 +115,7 @@ namespace LoadStoreOperations
                 0xA2, // Remeber A full 16bit address = 0xA240 (Not 0xA2 + 0x40)
             };
 
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
 
@@ -146,7 +146,7 @@ namespace LoadStoreOperations
                 0xA2, // Remeber A full 16bit address = 0xA240 (Not 0xA2 + 0x40)
             };
 
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
 
@@ -180,7 +180,7 @@ namespace LoadStoreOperations
                 0xA2, // Remeber A full 16bit address = 0xA240 (Not 0xA2 + 0x40)
             };
 
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
 
@@ -219,7 +219,7 @@ namespace LoadStoreOperations
                 0xA1, // (mem[161] mem[162])
             };
 
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
 

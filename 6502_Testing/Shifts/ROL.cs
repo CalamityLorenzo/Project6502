@@ -20,7 +20,7 @@ namespace Shifts
 
                 0x2A
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
             Trace.WriteLine($"A = {registers["A"]}");
@@ -47,7 +47,7 @@ namespace Shifts
                 0x26,
                 0xFF
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
             Trace.WriteLine($"A = {registers["A"]}");
@@ -79,7 +79,7 @@ namespace Shifts
                 0x36,
                 0xFE
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
             Trace.WriteLine($"A = {registers["A"]}");
@@ -109,7 +109,7 @@ namespace Shifts
                 0xFE,
                 0x16,
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
             Trace.WriteLine($"A = {registers["A"]}");
@@ -144,7 +144,7 @@ namespace Shifts
 
                 0x03
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
             Trace.WriteLine($"A = {registers["A"]}");

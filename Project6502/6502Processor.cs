@@ -71,8 +71,8 @@ namespace Project6502
         {
             if (_BRK != null)
             {
-                memory[0xFFFE] = (byte)(_BRK.Value.Address & 0xFF);
-                memory[0xFFFF] = (byte)(_BRK.Value.Address >> 8);
+                memory[0xFFFD] = (byte)(_BRK.Value.Address & 0xFF);
+                memory[0xFFFE] = (byte)(_BRK.Value.Address >> 8);
                 _BRK.Value.Method.CopyTo(memory, _BRK.Value.Address);
             }
         }
@@ -196,9 +196,10 @@ namespace Project6502
 
 
         // We program is passed in as bytesm and thus already parsed.
-        public void AdhocProcess(byte[] buffer, ushort startMemory = 0x200)
+        public void AdhocProgram(byte[] buffer, ushort startMemory = 0x200)
         {
             this.LoadProgram(buffer, startMemory);
+            _programCounter= startMemory;
             while (_programCounter < memory.Length)
             {
 
@@ -207,6 +208,14 @@ namespace Project6502
                 if (_abortTriggered) break;
             }
         }
+
+        public void AdhocInstruction(byte[] instruction)
+        {
+            this.LoadProgram(instruction, _programCounter);
+            InstructionStep();
+        }
+
+
 
         /// <summary>
         /// 1 instruction step

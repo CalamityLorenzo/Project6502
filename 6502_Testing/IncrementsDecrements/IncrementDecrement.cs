@@ -26,7 +26,7 @@ namespace IncrementsDecrements
                 0x01
                };
 
-            p.AdhocProcess(program);
+            p.AdhocProgram(program);
             var registers = p.Registers();
             Trace.WriteLine($"X = {registers["X"]}");
 
@@ -52,7 +52,7 @@ namespace IncrementsDecrements
 
                };
 
-            p.AdhocProcess(program);
+            p.AdhocProgram(program);
             var registers = p.Registers();
             Trace.WriteLine($"memory[254] = {memory[254]}");
 
@@ -73,7 +73,7 @@ namespace IncrementsDecrements
                 0x02,
                };
 
-            p.AdhocProcess(program);
+            p.AdhocProgram(program);
             var registers = p.Registers();
             Trace.WriteLine($"memory[512] = {memory[512]}");
 
@@ -97,7 +97,7 @@ namespace IncrementsDecrements
                 0x02,
                };
 
-            p.AdhocProcess(program);
+            p.AdhocProgram(program);
             var registers = p.Registers();
             Trace.WriteLine($"memory[513] = {memory[513]}");
 
@@ -119,7 +119,7 @@ namespace IncrementsDecrements
                 0xE8
                };
 
-            p.AdhocProcess(program);
+            p.AdhocProgram(program);
             var registers = p.Registers();
             Trace.WriteLine($"X = {registers["X"]}");
 
@@ -141,7 +141,7 @@ namespace IncrementsDecrements
                 0xC8
                };
 
-            p.AdhocProcess(program);
+            p.AdhocProgram(program);
             var registers = p.Registers();
             Trace.WriteLine($"Y = {registers["Y"]}");
 
@@ -162,7 +162,7 @@ namespace IncrementsDecrements
                 0xCA
                };
 
-            p.AdhocProcess(program);
+            p.AdhocProgram(program);
             var registers = p.Registers();
             Trace.WriteLine($"X = {registers["X"]}");
 
@@ -184,7 +184,7 @@ namespace IncrementsDecrements
                 0x88
                };
 
-            p.AdhocProcess(program);
+            p.AdhocProgram(program);
             var registers = p.Registers();
             Trace.WriteLine($"Y = {registers["Y"]}");
 
@@ -209,7 +209,7 @@ namespace IncrementsDecrements
                 0x01
                };
 
-            p.AdhocProcess(program);
+            p.AdhocProgram(program);
             var registers = p.Registers();
             Trace.WriteLine($"X = {registers["X"]}");
 
@@ -235,7 +235,7 @@ namespace IncrementsDecrements
 
                };
 
-            p.AdhocProcess(program);
+            p.AdhocProgram(program);
             var registers = p.Registers();
             Trace.WriteLine($"memory[254] = {memory[254]}");
 
@@ -256,7 +256,7 @@ namespace IncrementsDecrements
                 0x02,
                };
 
-            p.AdhocProcess(program);
+            p.AdhocProgram(program);
             var registers = p.Registers();
             Trace.WriteLine($"memory[512] = {memory[512]}");
 
@@ -280,7 +280,7 @@ namespace IncrementsDecrements
                 0x02,
                };
 
-            p.AdhocProcess(program);
+            p.AdhocProgram(program);
             var registers = p.Registers();
             Trace.WriteLine($"memory[513] = {memory[513]}");
 

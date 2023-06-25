@@ -18,7 +18,7 @@ namespace StackOperations
             {
                 0x9A
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
             var r2 = processor.Registers();
             Trace.WriteLine($"X (orig) {r1["X"]}");
             Trace.WriteLine($"X (current) {r2["X"]}");
@@ -40,7 +40,7 @@ namespace StackOperations
                 0x1F,
                 0xBA // TXS
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var r2 = processor.Registers();
             Trace.WriteLine($"X {r2["X"]}");
@@ -63,7 +63,7 @@ namespace StackOperations
                 0x48 // PHA
             };
 
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
             var r = processor.Registers();
             Trace.WriteLine($"A = {r["A"]}");
             Trace.WriteLine($"SP = {r["SP"]}");
@@ -72,7 +72,7 @@ namespace StackOperations
             Assert.IsTrue(r["A"] == "15");
             Assert.IsTrue(r["SP"] == "254");
             Assert.IsTrue(mem[511] == 15);
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
         }
 
         [TestMethod("PLA")]
@@ -100,7 +100,7 @@ namespace StackOperations
                 0x68
             };
 
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
             var r = processor.Registers();
             Trace.WriteLine($"A {r["A"]}");
             Trace.WriteLine($"SP {r["SP"]}");
@@ -111,7 +111,7 @@ namespace StackOperations
             Assert.IsTrue(r["SP"] == "255");
             Assert.IsTrue(r["N"] == "True"); // FUCKING VB!!
             Assert.IsTrue(mem[511] == 129);
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
         }
 
@@ -130,7 +130,7 @@ namespace StackOperations
               
                 0x08
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
             var r = processor.Registers();
             Trace.WriteLine($"N {r["N"]}");
             Trace.WriteLine($"mem[{0x01FE}] == {mem[0x01FE]}");
@@ -152,7 +152,7 @@ namespace StackOperations
                 0x08,
                 0x28
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
             var r = processor.Registers();
             Trace.WriteLine($"N {r["N"]}");
             Trace.WriteLine($"Z {r["Z"]}");

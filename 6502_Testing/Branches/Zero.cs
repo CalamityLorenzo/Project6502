@@ -28,7 +28,7 @@ namespace Branches
                 0x03
             };
 
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
             Trace.WriteLine($"PC = {registers["PC"]}");
@@ -62,7 +62,7 @@ namespace Branches
                 0x03
             };
 
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
             Trace.WriteLine($"PC = {registers["PC"]}");

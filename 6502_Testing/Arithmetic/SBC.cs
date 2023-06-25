@@ -23,7 +23,7 @@ namespace Arithmetic
                 0x12,  // Val not memory location
                 0x03,
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
             Trace.WriteLine($"A = {registers["A"]}");
@@ -53,7 +53,7 @@ namespace Arithmetic
                 0xe5,
                 0x16  //  memory location
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
             Trace.WriteLine($"A = {registers["A"]}");
@@ -86,7 +86,7 @@ namespace Arithmetic
                 0xF5,
                 0x16
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
             Trace.WriteLine($"A = {registers["A"]}");
@@ -119,7 +119,7 @@ namespace Arithmetic
                 0x16,
                 0x22
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
             Trace.WriteLine($"A = {registers["A"]}");
@@ -152,7 +152,7 @@ namespace Arithmetic
                 0x16,
                 0x22
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
             Trace.WriteLine($"A = {registers["A"]}");
@@ -184,7 +184,7 @@ namespace Arithmetic
                 0x16,
                 0x22
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
             Trace.WriteLine($"A = {registers["A"]}");
@@ -226,7 +226,7 @@ namespace Arithmetic
                 0x40
 
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
 
             var registers = processor.Registers();

@@ -22,7 +22,7 @@ namespace LoadStoreOperations
                 0x1F
             };
 
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
             var registers = processor.Registers();
             Trace.WriteLine(registers["X"]);
             Assert.IsTrue(registers["X"] == "31");
@@ -44,7 +44,7 @@ namespace LoadStoreOperations
                 0x25
             };
 
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
             var registers = processor.Registers();
             Trace.WriteLine(registers["X"]);
             Assert.IsTrue(registers["X"] == "100");
@@ -71,7 +71,7 @@ namespace LoadStoreOperations
                 0x47
             };
 
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
             var registers = processor.Registers();
             Trace.WriteLine($"A  {registers["A"]}");
             Trace.WriteLine($"X  {registers["X"]}");
@@ -95,7 +95,7 @@ namespace LoadStoreOperations
                 0xFF,
             };
 
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
             var registers = processor.Registers();
             Trace.WriteLine($"X = {registers["X"]}");
             Assert.IsTrue(registers["X"] == "100");
@@ -124,7 +124,7 @@ namespace LoadStoreOperations
                 0xFF,
             };
 
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
             var registers = processor.Registers();
             Trace.WriteLine(registers["X"]);
             Trace.WriteLine(registers["Y"]);

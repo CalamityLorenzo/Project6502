@@ -23,7 +23,7 @@ namespace Jumps_Calls
                 0x80,
                 0x6A,
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
             Trace.WriteLine($"PC = {registers["PC"]}");
@@ -46,7 +46,7 @@ namespace Jumps_Calls
                 0x6A
             };
 
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
             Trace.WriteLine($"PC = {registers["PC"]}");

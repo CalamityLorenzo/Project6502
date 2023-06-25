@@ -29,7 +29,7 @@ namespace LoadStoreOperations
                 0x25
             };
 
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
             var registers = processor.Registers();
             Trace.WriteLine($"Y {registers["Y"]}");
             Trace.WriteLine($"mem[{0x25}] =  {mem[0x25]}");
@@ -60,7 +60,7 @@ namespace LoadStoreOperations
                 0x25
             };
 
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
             var registers = processor.Registers();
             Trace.WriteLine($"X {registers["X"]}");
             Trace.WriteLine($"Y {registers["Y"]}");
@@ -91,7 +91,7 @@ namespace LoadStoreOperations
                 0x25,
             };
 
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
             var registers = processor.Registers();
             Trace.WriteLine($"Y {registers["Y"]}");
             Trace.WriteLine($"mem[{(0x25 << 8 | 0xFF)}] =  {mem[(0x25 << 8 | 0xFF)]}");

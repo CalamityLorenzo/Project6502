@@ -23,7 +23,7 @@ namespace Logical
                 0x49,
                 0xC8  // Val not memory location
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
             Trace.WriteLine($"A = {registers["A"]}");
@@ -50,7 +50,7 @@ namespace Logical
                 0x45,
                 0xC8  
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
             Trace.WriteLine($"A = {registers["A"]}");
@@ -78,7 +78,7 @@ namespace Logical
                 0x55,
                 0xC8 // 200 + 15
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
             Trace.WriteLine($"A = {registers["A"]}");
@@ -109,7 +109,7 @@ namespace Logical
                 0x00,
                 0x02, // 200 + 15
             };
-            processor.AdhocProcess(program, 0x300);
+            processor.AdhocProgram(program, 0x300);
 
             var registers = processor.Registers();
             Trace.WriteLine($"A = {registers["A"]}");
@@ -141,7 +141,7 @@ namespace Logical
                 0x00,
                 0x02, // 200 + 15
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
             Trace.WriteLine($"A = {registers["A"]}");
@@ -174,7 +174,7 @@ namespace Logical
                 0x00,
                 0x02, // 200 + 15
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
             Trace.WriteLine($"A = {registers["A"]}");
@@ -213,7 +213,7 @@ namespace Logical
                 0x41,
                 0xFF,
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
             Trace.WriteLine($"A = {registers["A"]}");
@@ -250,7 +250,7 @@ namespace Logical
                 0x51,
                 0xFF,
             };
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
 
             var registers = processor.Registers();
             Trace.WriteLine($"A = {registers["A"]}");

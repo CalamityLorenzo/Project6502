@@ -6,6 +6,5 @@
     /// </summary>
     /// <param name="address">Address where this list</param>
     /// <param name="method">the actual code</param>
-    public record struct InterruptStructure(ushort Address, byte[] Method) { };
-    
+    public record struct InterruptStructure(ushort Address, byte[] Method, Action<Six502Processor> Interrupt);
 }

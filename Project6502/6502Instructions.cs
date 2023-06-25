@@ -362,7 +362,8 @@ namespace Project6502
         /// </summary>
         void Break()
         {
-            _programCounter += 2;
+            // Move past the next possible instruction for reasons I don't quite understand
+            _programCounter += 1;
             memory[(0x01 << 8 | _stackPointer--)] = (byte)(_programCounter & 0xFF);
             memory[(0x01 << 8 | _stackPointer--)] = (byte)(_programCounter >> 8);
 
@@ -370,9 +371,13 @@ namespace Project6502
             _processorStatusFlags[5] = true;
 
             // Get the vector/memoryAddress
-            var BRKAddress = memory[(0xFFFF << 8 | 0xFFFE)];
+            var BRKAddress = (ushort)(memory[0xFFFE] << 8 | memory[0xFFFD]);
             _programCounter = BRKAddress;
-
+            if (_BRK != null)
+            {
+                _BRK.Value.Interrupt(this);
+            }
+            this.ReturnFromInterrupt();
         }
 
         /// <summary>

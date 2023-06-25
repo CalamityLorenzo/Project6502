@@ -35,7 +35,7 @@ namespace Jumps_Calls
 
             program2.CopyTo(p, 32874);
             processor.Reset();
-            processor.AdhocProcess(p);
+            processor.AdhocProgram(p);
             var r = processor.Registers();
 
             Trace.WriteLine($"X = {r["X"]}");
@@ -48,7 +48,7 @@ namespace Jumps_Calls
             Assert.IsTrue(r["Y"] == "130");
             Assert.IsTrue(r["PC"] == "1");
 
-            processor.AdhocProcess(program);
+            processor.AdhocProgram(program);
         }
     }
 }
