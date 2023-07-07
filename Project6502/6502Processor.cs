@@ -20,6 +20,20 @@ namespace Project6502
     {
         private bool _abortTriggered = false;
 
+        /// <summary>
+        /// Interrupt vectors and their location (OFF BY 1)
+        /// Subtract 1 from this byte (The topmost)
+        /// Then Add 1 to get the lower
+        /// </summary>
+        private ushort NMIVector = 0xFFFA;
+        private ushort RESETVector = 0xFFFC;
+        private ushort IRQBRKVector = 0xFFFE;
+
+        /// <summary>
+        /// Has the reset command pin been put into the low
+        /// </summary>
+        private bool _resetTriggered;
+
         byte Accumulator;
         byte XRegister;
         byte YRegister;
@@ -51,6 +65,8 @@ namespace Project6502
         readonly byte[] memory;
         /// This is the program as supplied via the process method.
         private byte[] _programBuffer;
+        private bool _RDYOn;
+
         /// <summary>
         /// This is the computer memory.
         /// This can be as big as it needs, we can only see the first 16bits
@@ -59,22 +75,6 @@ namespace Project6502
         public Six502Processor(byte[] memory)
         {
             this.memory = memory;
-        }
-
-        public Six502Processor(byte[] memory, InterruptStructure? BRK) : this(memory)
-        {
-            this._BRK = BRK;
-            ConfigureInterrupts();
-        }
-
-        private void ConfigureInterrupts()
-        {
-            if (_BRK != null)
-            {
-                memory[0xFFFD] = (byte)(_BRK.Value.Address & 0xFF);
-                memory[0xFFFE] = (byte)(_BRK.Value.Address >> 8);
-                _BRK.Value.Method.CopyTo(memory, _BRK.Value.Address);
-            }
         }
 
         public Dictionary<string, string> Registers() => new Dictionary<string, string>
@@ -138,15 +138,43 @@ namespace Project6502
             }
         }
 
+        /// <summary>
+        /// Reset is hardware/software in action
+        /// Set BCD flag, and unused flag in hardware
+        /// The rest software. No interrupt flags are set.
+        /// This can happen at any point and with impunity
+        /// </summary>
         public void Reset()
         {
-            // Un-used processor flag is always set 
-            _processorStatusFlags[5] = true;
+            // Un-used processor flag is always set in hardware
+            _processorStatusFlags[3] = true;
+            // BCD flag is false.
+            _processorStatusFlags[4] = false;
+
+            var resetVectorOffset = RESETVector - 1;
+            // Set program counter to the start location of our reset code.
+            _programCounter = (ushort)((memory[resetVectorOffset + 1] << 8) | memory[resetVectorOffset]);
             // Stack pointer must be at the top
             _stackPointer = 0xFF;
-            ConfigureInterrupts();
         }
-
+        /// <summary>
+        /// RDY: Memory ready signal
+        /// RDY pin is pulled down.
+        /// This effectively halts the processor.
+        /// </summary>
+        public void RDYOn()
+        {
+            this._RDYOn = true;
+        }
+        /// <summary>
+        /// RDY: Memory ready signal
+        /// RDY pin is pulled high.
+        /// This carries on reading memory.
+        /// </summary
+        public void RDYOff()
+        {
+            this._RDYOn = false;
+        }
 
         #region Address Modes
         private byte ImmediateConstant() => memory[_programCounter++];

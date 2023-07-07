@@ -21,4 +21,8 @@
     <ProjectReference Include="..\Project6502\Project6502.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="SystemCalls\" />
+  </ItemGroup>
+
 </Project>
