@@ -34,11 +34,9 @@ namespace Reset
             p.InstructionStep();
             var finalA= p.Registers()["A"];
 
-
             Trace.WriteLine($"startX={currentX}");
             Trace.WriteLine($"finalX={finalX}");
             Trace.WriteLine($"A={finalA}");
-            
 
         }
 

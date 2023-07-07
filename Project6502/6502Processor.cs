@@ -18,8 +18,7 @@ namespace Project6502
      */
     public partial class Six502Processor
     {
-        private bool _abortTriggered = false;
-
+        
         /// <summary>
         /// Interrupt vectors and their location (OFF BY 1)
         /// Subtract 1 from this byte (The topmost)
@@ -232,8 +231,7 @@ namespace Project6502
             {
 
                 InstructionStep();
-                // Not actually recorded anywhere...
-                if (_abortTriggered) break;
+
             }
         }
 
@@ -258,7 +256,6 @@ namespace Project6502
             switch (instruction)
             {
                 case 0x03:  // astop
-                    _abortTriggered = true;
                     return;
                 #region status_flag_changes
                 case 0x18: // CLC
