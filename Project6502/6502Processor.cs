@@ -40,6 +40,8 @@ namespace Project6502
         bool[] _processorStatusFlags = new bool[8];
 
         ushort _programCounter;
+        public ushort ProgramCounter => _programCounter;
+        public byte Databus => memory[_programCounter];
         // Memory page 1
         // $0100-$01ff = 256->511`
         byte[] stackData = new byte[255];
