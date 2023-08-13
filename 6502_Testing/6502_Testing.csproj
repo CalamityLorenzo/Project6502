@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\6502Assembler\6502Assembler.csproj" />
     <ProjectReference Include="..\Project6502\Project6502.csproj" />
   </ItemGroup>
 
